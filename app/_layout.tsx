@@ -4,7 +4,10 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import ResponseProvider from '@/services/LoaderContext';
+import { UserProvider } from '@/services/userContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,11 +22,28 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <ResponseProvider>
+        <UserProvider>
+          <Stack initialRouteName='index' screenOptions={{
+            headerTintColor:  Colors[colorScheme ?? 'light'].white, // Color of back button and title
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+            headerShadowVisible: false,
+            headerStyle: {
+                backgroundColor: Colors[colorScheme ?? 'light'].primary
+            }}}>
+            <Stack.Screen name="index" options={{ headerTitle: '' }}/>
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="MPIN"  options={{ headerTitle: '' }}/>
+             <Stack.Screen name="Jobs"  options={{ headerTitle: 'Jobs' }}/>
+              <Stack.Screen name="EmpDetails"  options={{ headerTitle: 'Employee Details' }}/>
+          </Stack>
+          <StatusBar style="auto" />
+        </UserProvider>
+      </ResponseProvider>
     </ThemeProvider>
   );
 }
