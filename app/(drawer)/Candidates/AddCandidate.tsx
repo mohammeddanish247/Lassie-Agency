@@ -759,11 +759,12 @@ const personalInfoValid = (): boolean => {
         <SafeAreaView style={globalStyles.container}>
         <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
         <View style={globalStyles.container}>
-            <ProgressSteps  topOffset={20} completedCheckColor="#fff" activeLabelColor="#5B94E2" activeStepIconBorderColor="#5B94E2" activeStepNumColor="#5B94E2" completedLabelColor="#5B94E2" completedProgressBarColor="#5B94E2" completedStepIconColor="#5B94E2" >
+            <ProgressSteps  topOffset={10} completedCheckColor="#fff" activeLabelColor="#5B94E2" activeStepIconBorderColor="#5B94E2" activeStepNumColor="#5B94E2" completedLabelColor="#5B94E2" completedProgressBarColor="#5B94E2" completedStepIconColor="#5B94E2" >
                 <ProgressStep label="Personal Info" buttonFillColor="#5B94E2" 
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!personalInfoValid()} 
                     onNext={personalInfoValidationCheck} 
+                    buttonBottomOffset={50}
                     >
                     <View>
                         <PersonalInfo data={formData} 
@@ -779,6 +780,7 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!jobDetailsValid()} 
                     onNext={jobDetailsValidatoionCheck}
+                    buttonBottomOffset={50}
                     >
                     <View>
                         <JobDetails data={formData} 
@@ -792,6 +794,7 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!experienceValid()} 
                     onNext={experienceValidationCheck}
+                    buttonBottomOffset={50}
                     >
                     <View>
                         <Experiences  data={formData}
@@ -803,6 +806,7 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!educationAndOtherValid()} 
                     onNext={educationAndOtherValidationCheck}
+                    buttonBottomOffset={50}
                     >
                     <View>
                         <EducationalInfo data={formData} 
@@ -813,7 +817,7 @@ const personalInfoValid = (): boolean => {
                     </View>
                 </ProgressStep>
                 <ProgressStep label="Attachments & Verification" buttonFillColor="#5B94E2" buttonPreviousTextColor="#5B94E2"
-                    buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
+                    buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps} buttonBottomOffset={50}
                     onSubmit={()=>{onSubmit()}}
                     >
                     <View>

@@ -13,6 +13,7 @@ export default function DrawerLayout() {
           screenOptions={{
             headerShown: false
           }}
+          
       //   screenOptions={({ route }:{route : any}) => ({
       //   drawerPosition: 'left',
       //   drawerType: 'front',

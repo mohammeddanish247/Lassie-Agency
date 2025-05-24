@@ -1,4 +1,5 @@
 import { Colors } from '@/constants/Colors';
+import { ApiService } from '@/services/userServices';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { usePathname, useRouter } from 'expo-router';
@@ -67,7 +68,6 @@ const CustomDrawer = (props : any) => {
     <DrawerContentScrollView 
       {...props} 
       contentContainerStyle={styles.container}
-      scrollEnabled={false}
       showsVerticalScrollIndicator= {false}
     >
       {/* User Profile Section */}
@@ -115,6 +115,24 @@ const CustomDrawer = (props : any) => {
             </TouchableOpacity>
           );
         })}
+
+         <TouchableOpacity style={[ styles.menuItem ]}
+               onPress={() => {
+                  ApiService.setAuth('false')
+                  router.replace('/');                  
+                }}
+            >
+              <Ionicons
+                name='log-out-outline'
+                size={24}
+              />
+              <Text style={[
+                styles.menuText,
+              ]}>
+                Log Out
+              </Text>
+            </TouchableOpacity>
+
       </View>
       {/* App Version */}
       <Text style={styles.versionText}>App Version 1.0</Text>

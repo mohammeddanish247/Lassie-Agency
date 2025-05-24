@@ -38,8 +38,9 @@ export default function RootLayout() {
             <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
             <Stack.Screen name="MPIN"  options={{ headerTitle: '' }}/>
-             <Stack.Screen name="Jobs"  options={{ headerTitle: 'Jobs' }}/>
-              <Stack.Screen name="EmpDetails"  options={{ headerTitle: 'Employee Details' }}/>
+            <Stack.Screen name="Signup"  options={{ headerTitle: '' }}/>
+            <Stack.Screen name="Jobs"  options={{ headerTitle: 'Jobs' }}/>
+            <Stack.Screen name="EmpDetails"  options={{ headerTitle: 'Employee Details' }}/>
           </Stack>
           <StatusBar style="auto" />
         </UserProvider>

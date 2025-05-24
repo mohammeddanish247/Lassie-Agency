@@ -138,7 +138,7 @@ export const getGlobalStyles = (colorScheme: 'light' | 'dark') => {
     verificationText: {
       fontSize: 16,
       color: colors.text,
-      fontWeight: '500'
+      // fontWeight: '500'
     },
     codeInputContainer: {
       flexDirection: 'row',

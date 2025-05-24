@@ -88,20 +88,24 @@ const SignUp = () => {
 
   const Next = () => {
     if (!validateForm()) return;
-    // navigation.navigate('VerifyOTP',{
-    //   formData: {
-    //     agency_name: fullName,
-    //     agency_email_id: email,
-    //     agency_mobaile: phoneNumber,
-    //     business_name: businessName,
-    //     industry: industry,
-    //     city: city,
-    //     state: state,
-    //     country_name: country,
-    //     country_code: '+91',
-    //     mipn: '0'
-    //   }
-    // });
+    let formData = {
+        agency_name: fullName,
+        agency_email_id: email,
+        agency_mobaile: phoneNumber,
+        business_name: businessName,
+        industry: industry,
+        city: city,
+        state: state,
+        country_name: country,
+        country_code: '+91',
+        mipn: '0'
+      }
+    router.push({
+      pathname: '/VerifyOTP',
+      params: {
+      unParsedData: JSON.stringify(formData), // must be string
+    },
+    });
   }
   
   const renderCountryItem = ({item } : {item : any}) => (

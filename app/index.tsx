@@ -207,7 +207,7 @@ export default function Index() {
         
           <TextInput
             style={styles.textInput}
-            placeholder="9 1 2 3 4 5 6 7 8 0"
+            placeholder="Enter Mobile No"
             placeholderTextColor={colors.textSecondary}
             keyboardType="phone-pad"
             value={phoneNumber}

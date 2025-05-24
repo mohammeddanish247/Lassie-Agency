@@ -16,7 +16,7 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
     const colors = Colors[colorScheme ?? 'light'];
     const globalStyles = getGlobalStyles(colorScheme ?? 'light');
     const { unParsedData } = useLocalSearchParams();
-      const formData = unParsedData ? JSON.parse(unParsedData as string) : null;
+    const formData = unParsedData ? JSON.parse(unParsedData as string) : null;
     const mobileNumber = formData.agency_mobaile;
     const [code, setCode] = React.useState<string[]>(['', '', '', '']);
     const codeInputRefs = React.useRef<(TextInput | null)[]>([]);

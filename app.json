@@ -9,15 +9,17 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.md33danish.LassieAgency"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "monochromeImage": "./assets/images/icon-mono.png",
-        "backgroundColor": "#5B94E2"
+        "backgroundColor": "#5E5E5E"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.md33danish.LassieAgency"
     },
     "web": {
       "bundler": "metro",
@@ -30,9 +32,8 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#5B94E2"
+          "backgroundColor": "#5E5E5E"
         }
       ]
     ],
