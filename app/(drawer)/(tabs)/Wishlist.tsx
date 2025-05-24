@@ -4,7 +4,7 @@ import { FilterByJobContent } from '@/components/FilterByJobContent';
 import { FilterByLocationContent } from '@/components/FilterByLocationContent';
 import { FilterByOtherContent } from '@/components/FilterByOtherContent';
 import { Category } from '@/components/FilterTabsHorizontal';
-import { Candidate } from '@/components/Interfaces';
+import { ICandidate } from '@/components/Interfaces';
 import BottomSheet from '@/components/PopupModal';
 import { Colors } from '@/constants/Colors';
 import { UserContext } from '@/services/userContext';
@@ -21,7 +21,7 @@ export default function Wishlist() {
   const colors = Colors[colorScheme ?? 'light'];
   const styles = getStyles(colorScheme ?? 'light');
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [candidates, setCandidates] = useState<ICandidate[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<{
     title: string;
@@ -128,7 +128,7 @@ export default function Wishlist() {
       setCandidates([]);
       ApiService.getCandidateList(userData.user_id,dataForFilter).then(data => {
         if (data.isSuccess == 'true') {
-          let allCandidates : Candidate[] = data.result;
+          let allCandidates : ICandidate[] = data.result;
           setCandidates(allCandidates)
         } else {
           console.log(data.message);
@@ -235,7 +235,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
     fab: {
       position: 'absolute',
       right: 20,
-      bottom: 20,
+      bottom: 50,
       backgroundColor: colors.primary,
       width: 56,
       height: 56,

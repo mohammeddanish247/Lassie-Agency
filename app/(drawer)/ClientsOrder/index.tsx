@@ -157,8 +157,7 @@ export const getStyle = (colorScheme : 'light' | 'dark') =>{
   const colors = Colors[colorScheme];
   return StyleSheet.create({
     listContainer: {
-      padding: 15,
-      paddingBottom: 80, // Extra space at bottom to account for 
+      paddingBottom: 150, // Extra space at bottom to account for 
     },
     cardHeader: {
       flexDirection: 'row',
@@ -242,7 +241,7 @@ export const getStyle = (colorScheme : 'light' | 'dark') =>{
       alignItems: 'center',
       justifyContent: 'center',
       right: 20,
-      bottom: 20,
+      bottom: 50,
       backgroundColor: colors.primary,
       borderRadius: 28,
       elevation: 8,

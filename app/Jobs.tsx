@@ -69,7 +69,7 @@ const JobScreen = () => {
         <View style={globalStyles.sectionContainer}>
           <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
           <View style={{marginTop: 20, marginBottom: 150}}>
-            <FlatList data={data} showsVerticalScrollIndicator={false} renderItem={({item}) => (
+            <FlatList contentContainerStyle={{paddingBottom: 50}} data={data} showsVerticalScrollIndicator={false} renderItem={({item}) => (
             <JobCard
               job={item}
               onViewDetails={()=> GotoViewDetails(item.job_id)}

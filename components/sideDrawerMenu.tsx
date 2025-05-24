@@ -145,6 +145,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
   return StyleSheet.create({
     container: {
       flexGrow: 1,
+      backgroundColor: colors.background
     },
     profileSection: {
       alignItems: 'center',
@@ -200,4 +201,5 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
     },
   });  
 }
+
 export default CustomDrawer;

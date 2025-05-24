@@ -178,8 +178,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingVertical: 15,
+    paddingTop: 15,
     paddingHorizontal: 15,
+    paddingBottom: 50
   },
   card: {
     backgroundColor: '#fff',
@@ -291,7 +292,7 @@ statusTag: {
     alignItems: 'center',
     justifyContent: 'center',
     right: 20,
-    bottom: 20,
+    bottom: 50,
     backgroundColor: '#4a90e2',
     borderRadius: 28,
     elevation: 8,

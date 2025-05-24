@@ -332,6 +332,7 @@ export default function DeliveryNoteScreen() {
           <TouchableOpacity style={[globalStyles.loginButton, {marginBottom: 28}]} onPress={SubmitClick}>
             <Text style={globalStyles .loginButtonText}>Submit Now</Text>
           </TouchableOpacity>
+              <View style={{marginBottom: 50}}></View>
           <BottomSheet visible={modalVisible} onClose={()=> setModalVisible(false)} title={modalContent.title}>{modalContent.content}</BottomSheet>
           <DatePicker doShow={showDatePicker} onDateChange={handleDateChanged}/>
 

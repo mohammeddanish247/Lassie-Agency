@@ -29,6 +29,8 @@ export default function Tab() {
         headerTitleAlign: 'center',
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarButton: HapticTab,
+        tabBarActiveBackgroundColor: Colors[colorScheme ?? 'light'].card,
+        tabBarInactiveBackgroundColor: Colors[colorScheme ?? 'light'].card,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
@@ -42,7 +44,6 @@ export default function Tab() {
         name="Home"
         options={{
           title: 'Home',
-          // headerShown : false,
           tabBarIcon: ({ color }) => <Ionicons size={28} name="home-outline" color={color} />,
         }}
       />

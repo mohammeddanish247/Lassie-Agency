@@ -209,7 +209,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
     fab: {
       position: 'absolute',
       right: 20,
-      bottom: 20,
+      bottom: 50,
       backgroundColor: colors.primary,
       width: 56,
       height: 56,

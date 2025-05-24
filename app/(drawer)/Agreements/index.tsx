@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 15,
-    paddingBottom: 20,
+    paddingBottom: 150,
   },
   card: {
     backgroundColor: '#fff',
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     right: 20,
-    bottom: 20,
+    bottom: 50,
     backgroundColor: '#4a90e2',
     borderRadius: 28,
     elevation: 8,
