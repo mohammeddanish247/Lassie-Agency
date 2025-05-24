@@ -16,7 +16,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "monochromeImage": "./assets/images/icon-mono.png",
-        "backgroundColor": "#5E5E5E"
+        "backgroundColor": "#5B94E2"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.md33danish.LassieAgency"
@@ -33,7 +33,7 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#5E5E5E"
+          "backgroundColor": "#5B94E2"
         }
       ]
     ],
