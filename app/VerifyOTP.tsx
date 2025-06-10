@@ -26,7 +26,7 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
     useEffect(() => {
         showLoading(true);
         if (formData.user == 'Employer' || formData.user == 'Candidate') {
-            console.log('requesting otp to '+formData.mobile_no);
+            console.log('requesting otp to '+formData.mobile_no + " user : "+formData.user);
             SendOtpRequest(formData.mobile_no).then(data=>{
             if (data.error == false) {
                 setCountdown(60);
@@ -50,6 +50,8 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
                 Alert.alert('OTP Alert',`${data.message}`);
                 navigation.goBack();
               }
+            }).catch(err=>{
+                console.error(JSON.stringify(err));
             }).finally(()=>{
                 showLoading(false)
             })
@@ -110,6 +112,8 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
             } else {
                 Alert.alert(`${data.message}`);
             }
+            }).catch(err=>{
+                console.error(JSON.stringify(err));
             }).finally(()=>{
                 showLoading(false)
             })

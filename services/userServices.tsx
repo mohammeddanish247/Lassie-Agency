@@ -1,6 +1,6 @@
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AddDeliveryNotes, AgreementFormData, CandidateDocuments, CandidateFilter, IFormData, Order, UserData } from '../components/Interfaces';
+import axios from "axios";
+import { AddDeliveryNotes, AgreementFormData, CandidateDocuments, IFormData, Order, UserData } from '../components/Interfaces';
 
 const BASE_URL = 'https://lassie.ltd/selectmaids/api';
 
@@ -71,6 +71,14 @@ const api = axios.create({
         form.append(key, value as string);
       });
       const res = await api.post<any>(agency_registration, formData)
+      return res.data
+    },
+
+    loginUsingOTP : async(mobile: any, otp : string) => {
+      const formData = new FormData();
+      formData.append('phone_number', mobile)
+      formData.append('user_otp', otp); 
+      const res= await api.post<any>(login_by_OTP, formData)
       return res.data
     },
 

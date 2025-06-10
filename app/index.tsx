@@ -102,12 +102,10 @@ export default function Index() {
   };
 
   const LoginClicked = async (givenOTP : number) => {
-    console.log(""+ givenOTP);
     if (isOtpComplete || givenOTP.toString().length == 4) {
-      console.log(givenOTP);
-      console.log(OTP);
-      if (givenOTP === OTP) {
-        ApiService.setAuth('true')
+      const response = await ApiService.loginUsingOTP(phoneNumber, givenOTP.toString());
+      if (response.error == false) {
+         ApiService.setAuth('true')
         gotoMPINscreen();
       } else {
         Alert.alert('OTP Alert!',`The OTP you entered doesn't match. Please check and try again.`)
