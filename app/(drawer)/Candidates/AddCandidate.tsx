@@ -10,17 +10,16 @@ import { UserContext } from "@/services/userContext";
 import { ApiService } from "@/services/userServices";
 import { getGlobalStyles } from "@/styles/globalStyles";
 import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
-import { Alert, SafeAreaView, ScrollViewProps, StatusBar, View, useColorScheme } from "react-native";
-import { ProgressStep, ProgressSteps } from "react-native-progress-steps";
-
-
+import { JSX, useContext, useEffect, useState } from "react";
+import { Alert, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, ScrollViewProps, StatusBar, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function AddCandidate() {
     const colorScheme = useColorScheme();
     const globalStyles = getGlobalStyles(colorScheme ?? 'light');
     const { showLoading, showSuccess } = useLoader();
- 
-
+    const insets = useSafeAreaInsets();
+    const [step, setStep] = useState<number>(1);
+    const totalSteps: number = 5;
 
     const [lists, setLists] = useState<AddCandidateFormLists>({
         countryList: [],
@@ -755,16 +754,158 @@ const personalInfoValid = (): boolean => {
     }
 
 
+  const handleNext = (): void => { 
+    if (step===1 && !personalInfoValidationCheck()) {
+        return
+    }
+    if (step===2 && !jobDetailsValidatoionCheck()) {
+        return
+    }
+    if (step===3 && !experienceValidationCheck()) {
+        return
+    }
+    if (step===4 && !educationAndOtherValidationCheck()) {
+        return
+    }
+    setStep(prevStep => Math.min(prevStep + 1, totalSteps));
+  };
+
+  const handlePrevious = (): void => {
+    setStep(prevStep => Math.max(prevStep - 1, 1));
+  };
+
+  const getStepTitle = (currentStep: number): string => {
+  switch(currentStep) {
+    case 1:
+      return 'Personal Information';
+    case 2:
+      return 'Jobs Details';
+    case 3:
+      return 'Experiences';
+    case 4:
+      return 'Education & Others';
+    case 5:
+      return 'Attachments & Verification';
+    default:
+      return '';
+  }
+};
+
+  const renderStepIndicator = (): JSX.Element => {
+    const indicators: JSX.Element[] = [];
+    for (let i = 1; i <= totalSteps; i++) {
+      indicators.push(
+        <View key={i} style={styles.stepContainer}>
+          <View style={[styles.stepIndicator, i <= step && styles.activeStep]}>
+            <Text style={[styles.stepText, i <= step && styles.activeStepText]}>{i}</Text>
+          </View>
+          {i < totalSteps && <View style={[styles.line, i < step && styles.activeLine]} />}
+        </View>
+      );
+    }
+    return <View style={styles.indicatorContainer}>{indicators}</View>;
+  };
+
+
     return (
         <SafeAreaView style={globalStyles.container}>
         <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
         <View style={globalStyles.container}>
-            <ProgressSteps  topOffset={10} completedCheckColor="#fff" activeLabelColor="#5B94E2" activeStepIconBorderColor="#5B94E2" activeStepNumColor="#5B94E2" completedLabelColor="#5B94E2" completedProgressBarColor="#5B94E2" completedStepIconColor="#5B94E2" >
+             <View style={styles.container}>
+                <View style={styles.buttonContainer}>
+                    <Text style={styles.formText}>{getStepTitle(step)}</Text>
+                </View>                
+                <View style={styles.buttonContainer}>
+                    {renderStepIndicator()}
+                </View>
+
+      <View style={styles.container}>
+       {/* personal Information */}
+        {step === 1 && 
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView>
+                    <PersonalInfo data={formData} 
+                        onChange={(field, value)=> handlePersonalInfoChange(field, value)}
+                        image= {candidateDocs}
+                        onDocChange = {(field, value)=> handleImageChange(field, value)}
+                        checkBoxList = {lists}
+                        onCheckBoxListChange = {(field, value)=>handleListsChange(field, value)}
+                    ></PersonalInfo>  
+                </ScrollView>
+        </KeyboardAvoidingView>                          
+        }
+        {/* Job Details */}
+        {step === 2 && 
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView>
+                    <JobDetails data={formData} 
+                        onChange={(field, value)=> handlePersonalInfoChange(field, value)}
+                        checkBoxList = {lists}
+                        onCheckBoxListChange = {(field, value)=>handleListsChange(field, value)}
+                    ></JobDetails>
+                </ScrollView>
+        </KeyboardAvoidingView> 
+        }
+        {/* Experiance */}
+        {step === 3 && 
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView>
+                    <Experiences  data={formData}
+                        onTotalExpChange={handleTotalExperienceChange}
+                        onAddExperience={handleAddExperience}></Experiences>
+                </ScrollView>
+        </KeyboardAvoidingView> 
+        }
+        {/* Education Info */}
+        {step === 4 && 
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView>
+                   <EducationalInfo data={formData} 
+                        onChange={(field, value)=> handlePersonalInfoChange(field, value)}
+                        checkBoxList = {lists}
+                        onCheckBoxListChange = {(field, value)=>handleListsChange(field, value)}
+                    ></EducationalInfo>
+                </ScrollView>
+        </KeyboardAvoidingView> 
+        }
+        {/* Attachment */}
+        {step === 5 && 
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+                <ScrollView>
+                   <AttachmentAndVerification data={formData} 
+                            onChange={(field, value)=> handlePersonalInfoChange(field, value)}
+                            image= {candidateDocs}
+                            onDocChange = {(field, value)=> handleImageChange(field, value)}
+                            />
+                </ScrollView>
+        </KeyboardAvoidingView> 
+        }
+      </View>
+
+      <View style={[styles.buttonContainer,{marginBottom: insets.bottom+10}]}>
+        {step > 1 && (
+          <TouchableOpacity onPress={handlePrevious} style={[styles.button, styles.backButton]}>
+            <Text style={styles.backButtonText}>Back</Text>
+          </TouchableOpacity>
+        )}
+        {step < totalSteps ? (
+          <TouchableOpacity onPress={handleNext} style={[styles.button, styles.nextButton]}>
+            <Text style={styles.nextButtonText}>Next</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={onSubmit} style={[styles.button, styles.nextButton]}>
+            <Text style={styles.nextButtonText}>Done</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+
+            
+            {/* <ProgressSteps  topOffset={20} completedCheckColor="#fff" activeLabelColor="#5B94E2" activeStepIconBorderColor="#5B94E2" activeStepNumColor="#5B94E2" completedLabelColor="#5B94E2" completedProgressBarColor="#5B94E2" completedStepIconColor="#5B94E2" >
                 <ProgressStep label="Personal Info" buttonFillColor="#5B94E2" 
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!personalInfoValid()} 
                     onNext={personalInfoValidationCheck} 
-                    buttonBottomOffset={50}
                     >
                     <View>
                         <PersonalInfo data={formData} 
@@ -780,7 +921,6 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!jobDetailsValid()} 
                     onNext={jobDetailsValidatoionCheck}
-                    buttonBottomOffset={50}
                     >
                     <View>
                         <JobDetails data={formData} 
@@ -794,7 +934,6 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!experienceValid()} 
                     onNext={experienceValidationCheck}
-                    buttonBottomOffset={50}
                     >
                     <View>
                         <Experiences  data={formData}
@@ -806,7 +945,6 @@ const personalInfoValid = (): boolean => {
                     buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     errors={!educationAndOtherValid()} 
                     onNext={educationAndOtherValidationCheck}
-                    buttonBottomOffset={50}
                     >
                     <View>
                         <EducationalInfo data={formData} 
@@ -817,7 +955,7 @@ const personalInfoValid = (): boolean => {
                     </View>
                 </ProgressStep>
                 <ProgressStep label="Attachments & Verification" buttonFillColor="#5B94E2" buttonPreviousTextColor="#5B94E2"
-                    buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps} buttonBottomOffset={50}
+                    buttonBorderColor="#5B94E2" scrollViewProps={defaultScrollViewProps}
                     onSubmit={()=>{onSubmit()}}
                     >
                     <View>
@@ -828,8 +966,94 @@ const personalInfoValid = (): boolean => {
                             />
                     </View>
                 </ProgressStep>
-            </ProgressSteps>
+            </ProgressSteps> */}
+
+
         </View>
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+   flex:1, width:'100%', padding:10,
+  },
+  indicatorContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  formText:{
+    fontSize: 16,
+    color: '#222222',
+    marginBottom: 10,
+    fontWeight : 'bold',
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+    textDecorationColor: '#222222'
+  },
+  stepContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  stepIndicator: {
+    width: 35,
+    height: 35,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#E7E7E7',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activeStep: {
+    borderColor: '#E1EDFC',
+    backgroundColor: '#5B94E2',
+  },
+  stepText: {
+    color: '#E7E7E7',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  activeStepText: {
+    color: 'white',
+  },
+  line: {
+    width: 20,
+    height: 2,
+    backgroundColor: '#E7E7E7',
+    marginHorizontal: 10,
+  },
+  activeLine: {
+    backgroundColor: '#5B94E2',
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    width:'100%',
+    justifyContent:'center',
+    flexDirection: 'row',
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  backButton: {
+    backgroundColor: '#E7E7E7',
+    marginRight: 10,
+  },
+  backButtonText: {
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  nextButton: {
+    backgroundColor: '#5B94E2',
+  },
+  nextButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+})
