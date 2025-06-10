@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function  Candidates() {
   const { userData } = useContext(UserContext);
@@ -31,6 +31,7 @@ export default function  Candidates() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [refreshData, setRefreshData] = useState('');
 
 
   const categories = [
@@ -43,9 +44,16 @@ export default function  Candidates() {
   const loadCandidate = async() => {
     if (loading || !hasMore) return;
     if (userData) {
+      let response : any
       setLoading(true);
-      const response = await ApiService.getCandidateList(userData.user_id,page)
-      console.log(response);
+      if (refreshData != '') {
+        console.log('inside if '+refreshData);
+        response = await ApiService.getCandidateList(userData.user_id,page,refreshData)
+      } else {
+        console.log('inside else '+refreshData);
+        response = await ApiService.getCandidateList(userData.user_id,page)
+      }
+      // console.log(response);
       if (response.isSuccess === 'true') {
         setCandidates((existingItems) => [...existingItems, ...response.result]);
         setPage((prePage) => prePage + 1);
@@ -99,18 +107,21 @@ export default function  Candidates() {
   const FilterByJobValueChange = (data : any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
+      setRefreshData(data);
     }
   };
 
   const FilterByOtherValueChange = (data: any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
+      setRefreshData(data);
     }
   }
 
   const FilterByAdvanceValueChange = (data : any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
+      setRefreshData(data);
     }
   };
 
@@ -123,6 +134,9 @@ export default function  Candidates() {
         if (data.isSuccess == 'true') {
           let allCandidates : ICandidate[] = data.result;
           setCandidates(allCandidates)
+          setHasMore(true);
+          setPage(2);
+          // setRefreshData('');
         } else {
           console.log(data.message);
         }
@@ -185,14 +199,22 @@ export default function  Candidates() {
             renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} />}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={()=>refreshCandidateList('')}
+                colors={['#0066CC']} // Customize for iOS (Android uses progress background)
+                tintColor="#0066CC" // iOS only
+              />
+            }
             showsVerticalScrollIndicator={false}
             onEndReached={loadCandidate}
             onEndReachedThreshold={0.5}
-            ListFooterComponent={ ()=>(
-              <View>
-              {loading && <ActivityIndicator size={'large'} style={{marginTop:30, marginBottom:30}}/>}
-              </View>
-            )}
+            // ListFooterComponent={ ()=>(
+            //   <View>
+            //   {loading && <ActivityIndicator size={'large'} style={{marginTop:30, marginBottom:30}}/>}
+            //   </View>
+            // )}
           />
         )}
     </SafeAreaView>

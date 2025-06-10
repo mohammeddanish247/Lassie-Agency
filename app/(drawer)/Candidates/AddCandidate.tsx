@@ -984,12 +984,12 @@ const styles = StyleSheet.create({
   },
   formText:{
     fontSize: 16,
-    color: '#222222',
+    color: '#5B94E2',
     marginBottom: 10,
     fontWeight : 'bold',
     textAlign: 'center',
-    textDecorationLine: 'underline',
-    textDecorationColor: '#222222'
+    // textDecorationLine: 'underline',
+    // textDecorationColor: '#222222'
   },
   stepContainer: {
     flexDirection: 'row',
