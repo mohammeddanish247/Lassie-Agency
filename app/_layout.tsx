@@ -41,6 +41,7 @@ export default function RootLayout() {
             <Stack.Screen name="Signup"  options={{ headerTitle: '' }}/>
             <Stack.Screen name="Jobs"  options={{ headerTitle: 'Jobs' }}/>
             <Stack.Screen name="EmpDetails"  options={{ headerTitle: 'Employee Details' }}/>
+            <Stack.Screen name="ViewCV"  options={{ headerTitle: 'Candidate CV' }}/>
           </Stack>
           <StatusBar style="auto" />
         </UserProvider>

@@ -61,6 +61,9 @@ export default function AddCandidate() {
         religion: '',
         height: '',
         weight: '',
+        jobseeker_yourcountry: '',
+        jobseeker_yourstate: '',
+        jobseeker_yourcity : '',
         job_title: '',
         job_type: '',
         jobseeker_currency: '',
@@ -518,6 +521,18 @@ const personalInfoValid = (): boolean => {
           }
           if (!formData.weight?.trim()) {
             Alert.alert('Error', 'Please select weight');
+            return false;
+          }
+          if (!formData.jobseeker_yourcountry?.trim()) {
+            Alert.alert('Error', 'Please select Your Country');
+            return false;
+          }
+          if (!formData.jobseeker_yourstate?.trim()) {
+            Alert.alert('Error', 'Please select Your State');
+            return false;
+          }
+          if (!formData.jobseeker_yourcity?.trim()) {
+            Alert.alert('Error', 'Please select Your City');
             return false;
           }
           return true;

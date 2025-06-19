@@ -60,6 +60,9 @@ export interface ICandidate {
   job_type: string;
   registration_type: string;
   iswishlisted : boolean;
+  jobseeker_yourcountry: string;
+  jobseeker_yourstate: string;
+  jobseeker_yourcity : string;
 }
 
 export interface CandidateFilter {
@@ -230,7 +233,7 @@ export interface ServiceDelivery {
 
 export interface ServiceDeliveryDetails {
   order_id: string;
-  
+  form_no: string;
   // Customer Information
   cname: string;               // Customer name
   cmobile: string;             // Customer mobile number
@@ -281,6 +284,9 @@ export interface IFormData { // 44
   religion: string;
   height: string; 
   weight: string;
+  jobseeker_yourcountry: string;
+  jobseeker_yourstate: string;
+  jobseeker_yourcity : string;
   job_title: string;
   job_type: string;
   jobseeker_currency: string;
@@ -406,4 +412,26 @@ export interface AgreementDetails {
   food: string; // Could be boolean or number (1/0)
   living: string; // Could be boolean or number (1/0)
   looking_for: string[] | string; // Array if parsed from JSON string
+}
+
+export interface JobSeeker {
+  canditate_photo: string;
+  registration_type: string;
+  canditate_name: string;
+  job_title: string;
+  job_type: string;
+  canditate_location: string;
+  canditate_salary: string;
+  canditate_experience: string;
+  canditate_marital_status: string;
+  canditate_currency: string;
+  canditate_age: string;
+  jobseeker_ethnicity: string;
+  jobseeker_skills: string;
+  jobseeker_gender: string; 
+  jobseeker_passport: string;
+  jobseeker_yourcity: string;
+  jobseeker_yourstate: string;
+  jobseeker_yourcountry: string;
+  iswishlisted: boolean;
 }

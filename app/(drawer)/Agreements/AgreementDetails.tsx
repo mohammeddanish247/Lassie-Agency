@@ -1,5 +1,6 @@
 import { AgreementDetails } from '@/components/Interfaces';
 import { ApiService } from '@/services/userServices';
+import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View
 } from 'react-native';
 
@@ -21,7 +23,8 @@ const AgreementsDetails = () => {
 
   const [agreementDetails, setAgreementDetails] = useState<AgreementDetails | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
-  
+        const colorScheme = useColorScheme();
+        const globalStyles = getGlobalStyles(colorScheme ?? 'light');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -70,11 +73,11 @@ const AgreementsDetails = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" />
       
       <ScrollView style={styles.scrollView}>
-        <View style={styles.card}>
+        <View style={[globalStyles.card, {margin: 15, marginBottom: 50}]}>
           {/* Candidate Details */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Candidate Details</Text>
@@ -173,8 +176,16 @@ const AgreementsDetails = () => {
                   <Text style={styles.detailValue}>{agreementDetails.canditate_name}</Text>
                 </View>
                 <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Mobile: </Text>
+                  <Text style={styles.detailValue}>{agreementDetails.canditate_mobile}</Text>
+                </View>
+                <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Employer Name: </Text>
                   <Text style={styles.detailValue}>{agreementDetails.employer_name}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Mobile: </Text>
+                  <Text style={styles.detailValue}>{agreementDetails.employer_moble}</Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Consultation Charge: </Text>
@@ -184,23 +195,15 @@ const AgreementsDetails = () => {
                   <Text style={styles.detailLabel}>Aggrement Validity: </Text>
                   <Text style={styles.detailValue}>{agreementDetails.aggrement_validity}</Text>
                 </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Pay Type: </Text>
+                  <Text style={styles.detailValue}>{agreementDetails.pay_type}</Text>
+                </View>
               </View>
               <View style={styles.column}>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Form Number: </Text>
                   <Text style={styles.detailValue}>{form_id}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Mobile: </Text>
-                  <Text style={styles.detailValue}>{agreementDetails.canditate_mobile}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Mobile: </Text>
-                  <Text style={styles.detailValue}>{agreementDetails.employer_moble}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Pay Type: </Text>
-                  <Text style={styles.detailValue}>{agreementDetails.pay_type}</Text>
                 </View>
               </View>
             </View>
@@ -246,13 +249,14 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 10,
-    margin: 15,
+    margin: 15, 
     padding: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    marginBottom: 70
   },
   section: {
     marginBottom: 20,
@@ -277,6 +281,7 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: 'row',
     marginBottom: 5,
+    flexWrap: 'wrap'
   },
   detailLabel: {
     fontSize: 14,

@@ -1,5 +1,6 @@
 import { ServiceDelivery } from '@/components/Interfaces';
 import { ApiService } from '@/services/userServices';
+import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -7,11 +8,13 @@ import {
   ActivityIndicator,
   FlatList,
   Linking,
+  RefreshControl,
   SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View
 } from 'react-native';
 
@@ -19,13 +22,16 @@ const ServicesDelivery = () => {
     const [sd, setSD] = useState<ServiceDelivery[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+      const colorScheme = useColorScheme();
+      const globalStyles = getGlobalStyles(colorScheme ?? 'light');
     
   const fetchSDList = async() =>{
     if (loading || !hasMore) return;
     setLoading(true);
     const response = await ApiService.get_service_delivery_list()
     if (response.isSuccess === 'true') {
-      setSD((existingItems) => [...existingItems, ...response.result]);
+      setSD(response.result);
+      // setSD((existingItems) => [...existingItems, ...response.result]);
     //   setPage((prePage) => prePage + 1);
     } else {
       setHasMore(false)
@@ -61,13 +67,13 @@ const ServicesDelivery = () => {
 
   // Card component for each candidate
   const ServiceDeliveryCard = ({ data } : {data : ServiceDelivery}) => (
-    <View style={styles.card}>
+    <View style={globalStyles.card}>
       {/* Candidate Details Section */}
       <View style={styles.sectionContainer}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Candidate Details</Text>
-          <View style={[styles.statusTag,data.e_verified.toLocaleLowerCase() === 'verified' ? styles.activeTag : styles.pendingTag]}>
-            <Text style={styles.statusText}>{data.e_verified}</Text>
+          <View style={[styles.statusTag,data.c_verified.toLocaleLowerCase() === 'verified' ? styles.activeTag : styles.pendingTag]}>
+            <Text style={styles.statusText}>{data.c_verified}</Text>
           </View>
         </View>
         
@@ -113,11 +119,11 @@ const ServicesDelivery = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" />
       {loading ? (
             <View>
-                <ActivityIndicator size={'large'} style={{alignItems:'center'}}></ActivityIndicator>
+                <ActivityIndicator size={'large'} style={{alignItems:'center', marginTop : 20}}></ActivityIndicator>
             </View>
         ) : (
             <FlatList
@@ -125,6 +131,14 @@ const ServicesDelivery = () => {
               renderItem={({ item }) => <ServiceDeliveryCard data={item} />}
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={loading}
+                  onRefresh={()=>fetchSDList()}
+                  colors={['#0066CC']} // Customize for iOS (Android uses progress background)
+                  tintColor="#0066CC" // iOS only
+                />
+              }
             />
             // <View>
             //     {sd.map((sdItem, index) => (
@@ -142,10 +156,6 @@ const ServicesDelivery = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f2f5',
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -181,17 +191,6 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingHorizontal: 15,
     paddingBottom: 50
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 15,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   sectionContainer: {
     marginBottom: 10,

@@ -1,5 +1,6 @@
 import { ServiceDeliveryDetails } from '@/components/Interfaces';
 import { ApiService } from '@/services/userServices';
+import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from 'react-native';
 
@@ -19,6 +21,8 @@ const DeliveryDetailsScreen = () => {
   const data = DDdata ? JSON.parse(DDdata as string) : null;
   const [sdDetails, setSDDetails] = useState<ServiceDeliveryDetails>();
   const [loading, setLoading] = useState(false);
+        const colorScheme = useColorScheme();
+        const globalStyles = getGlobalStyles(colorScheme ?? 'light');
 
   const fetchDetails = async() =>{
     if (loading) return;
@@ -37,28 +41,30 @@ const DeliveryDetailsScreen = () => {
 
   const VerifyOTP = (user: string) => {
     console.log("Cliked Verify OTP");
-    let data = {}
+    let d = {}
     if (user == 'Employer' && sdDetails) {
-      data = {
+      d = {
         mobile_no: sdDetails.emoble,
-        user: user
+        user: user,
+        formNo: data.form_no
       }
     }
     if (user == 'Candidate' && sdDetails) {
-      data = {
+      d = {
         mobile_no: sdDetails.cmobile,
-        user: user
+        user: user,
+        formNo: data.form_no
       }
     }
 
     router.push({
       pathname: '/VerifyOTP',
-      params: { unParsedData : JSON.stringify(data) },
+      params: { unParsedData : JSON.stringify(d) },
     });
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" />
       
       {/* Main Content */}
@@ -70,14 +76,14 @@ const DeliveryDetailsScreen = () => {
         ) : (
         <View>
 
-          <View style={styles.card}>
+          <View style={globalStyles.card}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Candidate Details</Text>
-              {data.c_verified && (
+              {/* {data.c_verified && (
                 <View style={styles.activeTag}>
                   <Text style={styles.activeText}>Active</Text>
                 </View>
-              )}
+              )} */}
             </View>
             
             <View style={styles.detailsRow}>
@@ -100,7 +106,7 @@ const DeliveryDetailsScreen = () => {
             </View>
           </View>
 
-          <View style={styles.card}>
+          <View style={globalStyles.card}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Employer Details</Text>
               <Text style={styles.salaryText}>{sdDetails?.esalary}<Text style={styles.salaryPeriod}>/Mo</Text></Text>
@@ -130,16 +136,15 @@ const DeliveryDetailsScreen = () => {
               </View> */}
             </View>
           </View>
-
-          <TouchableOpacity style={styles.printButton} onPress={()=> VerifyOTP('Candidate')}>
-            <Ionicons name="document-text-outline" size={20} color="#fff" />
-            <Text style={styles.printButtonText}>Verify Candidate</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.printButton} onPress={()=> VerifyOTP('Employer')}>
+          { data.e_verified.toLowerCase() != 'verified' && <TouchableOpacity style={styles.printButton} onPress={()=> VerifyOTP('Employer')}>
             <Ionicons name="document-text-outline" size={20} color="#fff" />
             <Text style={styles.printButtonText}>Verify Employer</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> }
+
+          { data.c_verified.toLowerCase() != 'verified' &&  <TouchableOpacity style={styles.printButton} onPress={()=> VerifyOTP('Candidate')}>
+            <Ionicons name="document-text-outline" size={20} color="#fff" />
+            <Text style={styles.printButtonText}>Verify Candidate</Text>
+          </TouchableOpacity>}
         
         </View>
       )}
@@ -186,17 +191,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 15,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 15,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   sectionHeader: {
     flexDirection: 'row',

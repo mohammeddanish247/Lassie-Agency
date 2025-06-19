@@ -1,5 +1,6 @@
 import { Agreement } from '@/components/Interfaces';
 import { ApiService } from '@/services/userServices';
+import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useColorScheme,
   View
 } from 'react-native';
 
@@ -20,6 +22,8 @@ const Agreements = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [agreementList, setAgreementList] = useState<Agreement[]>([]);
   const [loading, setLoading] = useState(false);
+        const colorScheme = useColorScheme();
+        const globalStyles = getGlobalStyles(colorScheme ?? 'light');
   
    // Filter agreements based on search query
    const filteredAgreements = agreementList.filter(agreement => 
@@ -66,7 +70,7 @@ const Agreements = () => {
 
   // Agreement Card component
   const AgreementCard = ({ data }: {data : Agreement}) => (
-    <View style={styles.card}>
+    <View style={globalStyles.card}>
       <View style={styles.row}>
         <Text style={styles.label}>SI. No: <Text style={styles.value}>{data.form_no}</Text></Text>
         <Text style={styles.label}>Form Number: <Text style={styles.value}>{data.order_id}</Text></Text>
@@ -103,7 +107,7 @@ const Agreements = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" />
       
       {/* Search Bar */}
@@ -143,10 +147,6 @@ const Agreements = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f2f5',
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -207,17 +207,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 15,
     paddingBottom: 150,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 15,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   row: {
     flexDirection: 'row',

@@ -153,7 +153,7 @@ const AddOrder = () => {
                 onChangeValue={ (value) => setOrderList(data => ({...data, mobile: value}))}></InputField>
             <InputField lable="Employer Email Id" placeholder="Employer Email Id" value={orderList.email} 
                 onChangeValue={ (value) => setOrderList(data => ({...data, email: value}))}></InputField>
-            <InputField lable="Employer Address" placeholder="Employer Address" value={orderList.address} 
+            <InputField lable="Employer Address" placeholder="Employer Address" value={orderList.address} multiline={true}
                 onChangeValue={ (value) => setOrderList(data => ({...data, address: value}))}></InputField>
 
             <View style={{marginTop: 30}}>

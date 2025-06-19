@@ -6,6 +6,7 @@ import { FilterByOtherContent } from '@/components/FilterByOtherContent';
 import FilterTabsHorizontal, { Category } from '@/components/FilterTabsHorizontal';
 import { ICandidate } from '@/components/Interfaces';
 import BottomSheet from '@/components/PopupModal';
+import RechargeScreen from '@/components/Recharge';
 import { Colors } from '@/constants/Colors';
 import { UserContext } from '@/services/userContext';
 import { ApiService } from '@/services/userServices';
@@ -171,6 +172,21 @@ export default function  Candidates() {
       });
     }
   }
+
+  const handleViewCV = (id: string) =>{
+    router.push({
+      pathname: '/(drawer)/Candidates/ViewCV',
+      params: { id: id },
+    });
+  }
+
+  const handleContact = (id: string) =>{
+    setModalContent({
+      title: '',
+      content: <RechargeScreen candidateID={id} closeModal={()=>setModalVisible(false)}></RechargeScreen>,
+    });
+    setModalVisible(true)
+  }
   
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -196,7 +212,7 @@ export default function  Candidates() {
         ) : (
           <FlatList
             data={candidates}
-            renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} />}
+            renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} ViewCVClicked={handleViewCV} ContactClicked={handleContact}/>}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.listContainer}
             refreshControl={

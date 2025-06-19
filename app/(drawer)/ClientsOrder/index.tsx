@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   FlatList,
   Linking,
+  RefreshControl,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -138,8 +139,16 @@ const ClientsOrder = () => {
             <ActivityIndicator size={'large'} style={{alignItems:'center'}}></ActivityIndicator>
           ) : (
             <FlatList data={filteredOrders} keyExtractor={(item : any, index) => item.form_id} contentContainerStyle={styles.listContainer}
-              renderItem={({item})=> <OrderCard data={item}></OrderCard>
-            }></FlatList>
+              renderItem={({item})=> <OrderCard data={item}></OrderCard>}
+               refreshControl={
+                  <RefreshControl
+                    refreshing={loading}
+                    onRefresh={()=>loadOrders()}
+                    colors={['#0066CC']} // Customize for iOS (Android uses progress background)
+                    tintColor="#0066CC" // iOS only
+                  />
+                }
+              ></FlatList>
           )}
         </View>
         <View style={styles.bottomPadding} />

@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Image, StyleSheet, Dimensions, ImageSourcePropType } from 'react-native';
+import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 
 type SlideItem = {
   id: string | number;
-  image: ImageSourcePropType | { uri: string };
+  image: string;
   // Add other properties as needed (e.g., title, description)
 };
 
@@ -45,7 +45,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
         renderItem={({ item }) => (
           <View style={styles.slide}>
             <Image 
-              source={item.image} 
+              source={{uri : item.image}} 
               style={styles.image}
               resizeMode="cover"
             />

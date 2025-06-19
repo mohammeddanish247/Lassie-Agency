@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { InputField } from "./InputField";
-import ProfileImage from "./ProfileImage";
-import { ScrollView, View, StyleSheet } from "react-native";
-import { DatePicker } from "./DatePicker";
-import BottomSheet from "./PopupModal";
-import { CheckboxList, checkbox } from "./CheckboxList";
-import { RadioGroup, RadioOption } from "./RadioButton";
-import { ApiService } from "../services/userServices";
-import { AddCandidateFormLists, CandidateDocuments, Country, Ethnicity, Height, IFormData, Language, Weight } from "./Interfaces";
-import { Religion } from "./Interfaces";
+import { StyleSheet, View } from "react-native";
 import { useLoader } from "../services/LoaderContext";
+import { CheckboxList, checkbox } from "./CheckboxList";
+import { DatePicker } from "./DatePicker";
+import { InputField } from "./InputField";
+import { AddCandidateFormLists, CandidateDocuments, IFormData } from "./Interfaces";
+import BottomSheet from "./PopupModal";
+import ProfileImage from "./ProfileImage";
+import { RadioGroup, RadioOption } from "./RadioButton";
 
 interface PersonalInfoProps {
     data: Partial<IFormData>;
@@ -268,6 +266,24 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 icon="scale-outline" 
                 itemClicked={() => openModalAccordingly('OpenWeightList')} // Changed prop name to onIconPress
             />
+            <InputField 
+                lable="Your Country" 
+                placeholder="Enter Your Country" 
+                onChangeValue={(value) => onChange('jobseeker_yourcountry', value)} 
+                value={data.jobseeker_yourcountry}
+            />
+            <InputField 
+                lable="Your State" 
+                placeholder="Enter Your Sate" 
+                onChangeValue={(value) => onChange('jobseeker_yourstate', value)} 
+                value={data.jobseeker_yourstate}
+            />
+            <InputField 
+                lable="Your City" 
+                placeholder="Enter Your City" 
+                onChangeValue={(value) => onChange('jobseeker_yourcity', value)} 
+                value={data.jobseeker_yourcity}
+            />
             {/* <InputField 
                 lable="Language" 
                 placeholder="Select Your Language" 
@@ -277,24 +293,7 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 icon="language-outline" 
                 itemClicked={() => openModalAccordingly('OpenLanguageList')} // Changed prop name to onIconPress
             />
-            <InputField 
-                lable="Seeker Country" 
-                placeholder="Enter Seeker Country" 
-                onChangeValue={setSeekerCountry} 
-                value={seekerCountry}
-            />
-            <InputField 
-                lable="Seeker State" 
-                placeholder="Enter Seeker Sate" 
-                onChangeValue={setSeekerState} 
-                value={seekerState}
-            />
-            <InputField 
-                lable="Seeker City" 
-                placeholder="Enter Seeker City" 
-                onChangeValue={setSeekerCIty} 
-                value={seekerCity}
-            />
+
             <InputField 
                 lable="Seeker Locality" 
                 placeholder="Enter Seeker Locality" 

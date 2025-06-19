@@ -50,6 +50,12 @@ const package_list = '/package_list.php'
 const create_employer_order_by_share_link = '/create_employer_order_by_share_link.php'
 const get_agreement_details = '/agreement_details.php'
 const get_employee_details = 'job_details.php'
+const varifyEmployer = 'employer_verify_otp_delivery_notes.php'
+const varifyCandidate = 'candiate_verify_otp_delivery_notes.php'
+const getCV = 'view_cv.php'
+const getBanners = 'banner_list.php'
+const RemainingContacts = 'canditate_seen_by_agency.php'
+const previous_package_book = 'previous_package_book.php'
 
 
 const api = axios.create({
@@ -65,7 +71,7 @@ const api = axios.create({
   export const ApiService = {
 
     agencyRegistration: async(formData: any) : Promise<any> =>{
-      console.log(formData);
+      console.log("Danish "+formData);
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         form.append(key, value as string);
@@ -414,9 +420,6 @@ const api = axios.create({
     addCandidate: async(data : Partial<IFormData>, id: string)=>{
       const formData = new FormData();
       formData.append('agency_id', id)
-      formData.append('jobseeker_yourcountry', 'NA')
-      formData.append('jobseeker_yourstate', 'NA')
-      formData.append('jobseeker_yourcity', 'NA')
       formData.append('jobseeker_locality', 'NA')
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value.toString());
@@ -489,5 +492,50 @@ const api = axios.create({
       const res = await api.post<any>(get_employee_details, formData)
       return res.data
     },
-    
+
+    verifyEmployer: async (formId : string) => {
+      console.log(formId);
+       const formData = new FormData();
+      formData.append('service_delivery_note_id', formId);
+      const res = await api.post<any>(varifyEmployer, formData)
+      return res.data
+    },
+
+    verifyCandidate: async (formId : string) => {
+      console.log(formId);
+      const formData = new FormData();
+      formData.append('service_delivery_note_id', formId);
+      const res = await api.post<any>(varifyCandidate, formData)
+      return res.data
+    },
+
+    getCV : async (id : string, user_id: string) => {
+      const formData = new FormData();
+      formData.append('candidate_id', id);
+      formData.append('agency_id', user_id);
+      const res = await api.post<any>(getCV, formData)
+      return res.data
+    },
+
+    getBannersImg : async () => {
+      const res = await api.post<any>(getBanners)
+      return res.data
+    },
+
+    ViewCandidate : async (cid: string, uid:string) => {
+      const formData = new FormData();
+      formData.append('canditate_id', cid);
+      formData.append('user_id', uid);
+      formData.append('type', 'Agency');
+      const res = await api.post<any>(RemainingContacts, formData)
+      return res.data
+    },
+
+    PreviousPackage : async (uid:string) => {
+      const formData = new FormData();
+      formData.append('user_id', uid);
+      formData.append('type', 'Agency');
+      const res = await api.post<any>(previous_package_book, formData)
+      return res.data
+    }
 }

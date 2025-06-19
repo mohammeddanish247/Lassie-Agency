@@ -1,5 +1,5 @@
 import { FilterByJobContent } from '@/components/FilterByJobContent';
-import FilterTabsHorizontal, { Category } from '@/components/FilterTabsHorizontal';
+import { Category } from '@/components/FilterTabsHorizontal';
 import JobCard from '@/components/JobCard';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -67,8 +67,7 @@ const JobScreen = () => {
       <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
         <View style={globalStyles.sectionContainer}>
-          <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
-          <View style={{marginTop: 20, marginBottom: 150}}>
+          {/* <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal> */}
             <FlatList contentContainerStyle={{paddingBottom: 50}} data={data} showsVerticalScrollIndicator={false} renderItem={({item}) => (
             <JobCard
               job={item}
@@ -76,7 +75,6 @@ const JobScreen = () => {
             />
           )}></FlatList>
           </View>
-        </View>
       </SafeAreaView>
   )
 }

@@ -22,6 +22,7 @@ export default function CandidatesLayout() {
         headerLeft: () => <DrawerToggleButton tintColor={Colors[colorScheme ?? 'light'].white} />,
         }} />
       <Stack.Screen name="AddCandidate" options={{ title: "Add Candidate" }} />
+      <Stack.Screen name="ViewCV" options={{ title: "Candidate CV" }} />
     </Stack>
   )
 }

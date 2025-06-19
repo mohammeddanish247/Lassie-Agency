@@ -26,7 +26,7 @@ export const getGlobalStyles = (colorScheme: 'light' | 'dark') => {
         elevation: 1,
     },
     sectionContainer: {
-      marginTop: 20,
+      paddingVertical: 20,
       paddingHorizontal: 15,
     },
     headerWrapper: {

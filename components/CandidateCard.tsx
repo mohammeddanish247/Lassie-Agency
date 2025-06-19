@@ -8,9 +8,11 @@ import { ICandidate } from './Interfaces';
 type  CandidateListItems = {
   candidate: ICandidate;
   AddWishlist: (value : boolean, id: string)=> void;
+  ViewCVClicked : (candidateID : string) => void;
+  ContactClicked : (candidateID : string) => void;
   isWishlistView? : boolean;
 }
-const CadidateCard = ({ candidate, AddWishlist, isWishlistView }:  CandidateListItems ) => {
+const CandidateCard = ({ candidate, AddWishlist, ViewCVClicked,ContactClicked, isWishlistView }:  CandidateListItems ) => {
   const colorScheme = useColorScheme();
   const styles = getStyles(colorScheme ?? 'light');
   const colors = Colors[colorScheme ?? 'light'];
@@ -54,15 +56,15 @@ const CadidateCard = ({ candidate, AddWishlist, isWishlistView }:  CandidateList
             </View>
 
             <Text style={styles.shiftText}>{candidate.job_type}</Text>
-            <Text style={styles.locationText}>{candidate.canditate_location}</Text>
+            <Text style={styles.locationText}>{candidate.jobseeker_yourcity},{candidate.jobseeker_yourstate},{candidate.jobseeker_yourcountry}</Text>
             <Text style={styles.salaryText}>{candidate.canditate_salary}</Text>
             
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.viewCvButton}>
+              <TouchableOpacity style={styles.viewCvButton} onPress={()=>ViewCVClicked(candidate.canditate_id)}>
                 <Ionicons name='document-outline' color={colors.white} size={20} style={{marginRight: 5}}></Ionicons>
                 <Text style={styles.viewCvText}>View CV</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.contactButton}>
+              <TouchableOpacity style={styles.contactButton}onPress={()=>ContactClicked(candidate.canditate_id)} >
                 <Text style={styles.contactText}>Contact Me</Text>
               </TouchableOpacity>
             </View>
@@ -85,7 +87,7 @@ const CadidateCard = ({ candidate, AddWishlist, isWishlistView }:  CandidateList
   );
 };
 
-export default CadidateCard;
+export default CandidateCard;
 
 export const getStyles = (colorScheme: 'light' | 'dark') => {
     const colors = Colors[colorScheme];

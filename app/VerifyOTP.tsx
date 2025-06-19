@@ -1,7 +1,8 @@
 import { Colors } from '@/constants/Colors';
+import { ApiService } from '@/services/userServices';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { Alert, SafeAreaView, StatusBar, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
@@ -11,7 +12,7 @@ import { getGlobalStyles } from '../styles/globalStyles';
 
 interface VerifyOTPProps {}
 
-const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
+const VerifyOTP = () => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const globalStyles = getGlobalStyles(colorScheme ?? 'light');
@@ -20,35 +21,43 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
     const mobileNumber = formData.agency_mobaile;
     const [code, setCode] = React.useState<string[]>(['', '', '', '']);
     const codeInputRefs = React.useRef<(TextInput | null)[]>([]);
-    const { showLoading } = useLoader();
+    const { showLoading, showSuccess } = useLoader();
     const [OTP, setOTP] = useState('');
-
+    const [isOtpComplete, setIsOtpComplete] = React.useState(false);
+    
     useEffect(() => {
         showLoading(true);
         if (formData.user == 'Employer' || formData.user == 'Candidate') {
             console.log('requesting otp to '+formData.mobile_no + " user : "+formData.user);
-            SendOtpRequest(formData.mobile_no).then(data=>{
+            SendOtpCandidate(formData.mobile_no, formData.user).then(data=>{
             if (data.error == false) {
                 setCountdown(60);
                 setIsSent(true);
-                setOTP(data.user_otp)
+                setOTP(data.otp)
               } else {
                 Alert.alert('OTP Alert',`${data.message}`);
-                navigation.goBack();
+                router.back();
               }
             }).finally(()=>{
                 showLoading(false)
             })
         } else {
             SendOtpRequest(mobileNumber).then(data=>{
-            console.log('requesting otp to '+formData.mobile_no);
+            console.log('requesting otp to '+formData.agency_mobaile);
             if (data.error == false) {
                 setCountdown(60);
                 setIsSent(true);
                 setOTP(data.user_otp)
               } else {
-                Alert.alert('OTP Alert',`${data.message}`);
-                navigation.goBack();
+                Alert.alert('OTP Alert',`${data.message}`,[
+                    {
+                    text: 'OK',
+                    onPress: () => {
+                        router.back();
+                    },
+                    },
+                ],
+                { cancelable: false })
               }
             }).catch(err=>{
                 console.error(JSON.stringify(err));
@@ -64,7 +73,34 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
         formData.append('user_type', 'Agency'); 
         try {
         const response = await axios.post(
-            'https://lassie.ltd/selectmaids/api/get_otp_by_phone_number_for_login.php',
+            'https://selectmaids.org/api/signup_by_otp.php',
+            formData,
+            {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            }
+        );
+        return response.data;
+        } catch (error) {
+        throw error;
+        }
+    }
+
+    const SendOtpCandidate = async (phoneNumber : number, user : string)=>{
+        let url = '';
+        const formData = new FormData();
+        if (user === 'Candidate') {
+            url = 'https://selectmaids.org/api/candiate_verify_otp_send_delivery_notes.php'
+             formData.append('candiatate_phone_number', phoneNumber.toString()); 
+        } else {
+            url = 'https://selectmaids.org/api/employer_verify_otp_send_delivery_notes.php'
+             formData.append('employer_phone_number', phoneNumber.toString()); 
+        }
+        formData.append('service_delivery_note_id', ''); 
+        try {
+        const response = await axios.post(
+            url,
             formData,
             {
             headers: {
@@ -82,10 +118,18 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
         const newCode = [...code];
         newCode[index] = text;
         setCode(newCode);
+
+        // Check if all fields are filled
+        const allFilled = newCode.every(digit => digit.length === 1);
+        setIsOtpComplete(allFilled);
         
         // Auto focus to next input if current input is filled
         if (text.length === 1 && index < 3) {
         codeInputRefs.current[index + 1]?.focus();
+        }
+
+        if (allFilled) {
+            Next(parseInt(newCode.join('')));
         }
     };
 
@@ -111,6 +155,7 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
                 setOTP(data.user_otp)
             } else {
                 Alert.alert(`${data.message}`);
+                router.back();
             }
             }).catch(err=>{
                 console.error(JSON.stringify(err));
@@ -126,21 +171,47 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
-    const Next = () => {
-        let givenOTP = parseInt(code.join(''));
+    const Next = (givenOTP : number) => {
         console.log(givenOTP, OTP);
         if (givenOTP === parseInt(OTP)) {
-            navigation.navigate('MPIN',{
-                formData: formData 
-            });
+             if (formData.user == 'Employer' || formData.user == 'Candidate') {
+                showLoading(true);
+                setTimeout(async () => {
+                    if (formData.user == 'Employer') {
+                        ApiService.verifyEmployer(formData.formNo).then(res=>{
+                            if (res.error == false) {
+                                showLoading(false);
+                                showSuccess(`${formData.user} is verified Successfully.`);
+                                router.dismissAll();
+                            }
+                        })
+                    } else {
+                        ApiService.verifyCandidate(formData.formNo).then(res=>{
+                            if (res.error == false) {
+                                showLoading(false); 
+                                showSuccess(`${formData.user} is verified Successfully.`);
+                                router.dismissAll();
+                            }
+                        })
+                    }
+                }, 500);
+             } else {
+                router.push({pathname : '/MPIN', params : {
+                    unParsedData: JSON.stringify(formData) 
+                }})
+             }
           } else {
-          Alert.alert('OTP Alert!','Please enter the correct OTP to login to the app.')
+            if (formData.user == 'Employer' || formData.user == 'Candidate') {
+                 Alert.alert('OTP Alert!','Please enter the correct OTP.')
+            } else {
+                 Alert.alert('OTP Alert!','Please enter the correct OTP to login to the app.')
+            }
         }
     }
     
 
     const wrongNo = ()=> {
-      navigation.goBack();
+      router.back();
     }
 
     return (
@@ -191,7 +262,7 @@ const VerifyOTP = ({route, navigation}: {route : any, navigation :any}) => {
             </TouchableOpacity>
             
             {/* Login button */}
-            <TouchableOpacity style={globalStyles.loginButton} onPress={Next}>
+            <TouchableOpacity style={globalStyles.loginButton} onPress={ ()=> Next(parseInt(code.join('')))}>
             <Text style={globalStyles.loginButtonText}>Next</Text>
             </TouchableOpacity>
 

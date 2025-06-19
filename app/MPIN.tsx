@@ -24,15 +24,13 @@ const MPIN = () => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const styles = getStyles(colorScheme ?? 'light');
-  const { mobile, isUserLoggedIn } = useLocalSearchParams();
-  const formData  = { 
-    mobile : mobile,
-    isUserLoggedIn: isUserLoggedIn,
-    mipn : ''
-  }
+  const { unParsedData } = useLocalSearchParams();
+  const formData = unParsedData ? JSON.parse(unParsedData as string) : {};
+  console.log(formData);
   const { showLoading } = useLoader();
   const [mpin, setMpin] = useState<string>('');
   const [confirmMpin, setConfirmMpin] = useState<string>('');
+  const { mobile, isUserLoggedIn } = useLocalSearchParams();
   const [agreeToTerms, setAgreeToTerms] = useState<boolean>(isUserLoggedIn == 'true');
   
   // Refs for the TextInputs to handle focus
@@ -124,7 +122,7 @@ const MPIN = () => {
     .then((response)=>{
       if (response.error == false) {
         Alert.alert('Success', 'Success! Your account is ready. Use your credentials to log in now.');
-        router.replace('/Login')
+        router.replace('/')
         // navigation.dispatch(
         //   CommonActions.reset({
         //     index: 0,

@@ -6,11 +6,13 @@ import { FilterByOtherContent } from '@/components/FilterByOtherContent';
 import { Category } from '@/components/FilterTabsHorizontal';
 import { ICandidate } from '@/components/Interfaces';
 import BottomSheet from '@/components/PopupModal';
+import RechargeScreen from '@/components/Recharge';
 import { Colors } from '@/constants/Colors';
 import { UserContext } from '@/services/userContext';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { useFocusEffect } from '@react-navigation/native';
+import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, SafeAreaView, StatusBar, StyleSheet, Text, ToastAndroid, useColorScheme, View } from 'react-native';
@@ -102,6 +104,7 @@ export default function Wishlist() {
     }
     setModalVisible(true);
   };
+  
 
   const FilterByJobValueChange = (data : any) => {
     if (Object.keys(data).length > 0) {
@@ -174,6 +177,20 @@ export default function Wishlist() {
     setLoading(false);
   };
 
+  const handleViewCV = (id: string) =>{
+    router.push({
+      pathname: '/ViewCV',
+      params: { id: id },
+    });
+  }
+
+  const handleContact = (id: string) =>{
+    setModalContent({
+      title: '',
+      content: <RechargeScreen candidateID={id} closeModal={()=>setModalVisible(false)}></RechargeScreen>,
+    });
+    setModalVisible(true)
+  }
   
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -200,7 +217,7 @@ export default function Wishlist() {
         ) : (
           <FlatList
             data={candidates}
-            renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} isWishlistView={true}/>}
+            renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} ViewCVClicked={handleViewCV} ContactClicked={handleContact} isWishlistView={true}/>}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}

@@ -10,20 +10,7 @@ import { useLoader } from '../../../services/LoaderContext';
 import { ApiService } from '../../../services/userServices';
 import { getGlobalStyles } from '../../../styles/globalStyles';
 
-const remoteSlides = [
-  {
-    id: 1,
-    image: require('@/assets/images/slide1.png'),
-  },
-  {
-    id: 2,
-    image: require('@/assets/images/slide2.png'),
-  },
-  {
-    id: 3,
-    image: { uri: 'https://fastly.picsum.photos/id/10/800/600.jpg?hmac=9u_ZYBasFb_VEVrBgjTZor_IfBxtpq9zl_CjKJr7-cs' },
-  },
-];
+let remoteSlides : { id: string; image: string }[] = []; 
 
 // let maidProfiles: MaidProfiles[] = [];
 // let jobListing : JobListing[] = [];
@@ -40,9 +27,22 @@ export default function Home({navigation} : {navigation : any}) {
   
   const [isReady, setIsReady] = useState(false);
 
+  const getBanners = () => {
+    ApiService.getBannersImg().then(res=>{
+      if (res.isSuccess == 'true') {
+        if (res && res.result) {
+          remoteSlides = res.result.map((item:any) => ({
+            id: item.id, 
+            image: item.banner_image 
+          }));
+        }
+      }
+    })
+  }
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setIsReady(true);
+      getBanners();
     });
   }, []);
   // useFocusEffect(
@@ -152,7 +152,7 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
         {maidProfiles?.length > 0 ? (
           <View style={globalStyles.sectionContainer}>
             <Text style={styles.sectionTitle}>Maid Profiles</Text>
-            <FlatList data={maidProfiles.slice(0,5)} scrollEnabled={false} renderItem={({item}) => (
+            <FlatList data={maidProfiles} scrollEnabled={false} renderItem={({item}) => (
               <ProfileItem profile={item}></ProfileItem>
             )}></FlatList>
           </View>
