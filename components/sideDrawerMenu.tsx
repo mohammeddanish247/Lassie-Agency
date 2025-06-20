@@ -5,7 +5,9 @@ import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { usePathname, useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import {
+  Alert,
   Dimensions,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -97,8 +99,12 @@ const CustomDrawer = (props : any) => {
                 if (item.screen === 'Account' || item.screen === 'Home') {
                   router.push(`/(drawer)/(tabs)/${item.screen}`);
                 } else {
-                  // router.push('/Candidate/CandidatesList')
-                  router.push(`/(drawer)/${item.screen}`);
+                  if (item.screen === 'Supports') {
+                    const encodedMessage = encodeURIComponent("Hello, I'm interested in your app service!, I Need Support");
+                    Linking.openURL(`https://wa.me/+919582833699?text=${encodedMessage}`).catch(() => Alert.alert('Error', 'WhatsApp not installed'));
+                  } else {
+                    router.push(`/(drawer)/${item.screen}`);
+                  }
                 }}}
             >
               <Ionicons

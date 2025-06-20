@@ -2,6 +2,7 @@ import { Colors } from '@/constants/Colors';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Modal, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CurvedHeader from '../components/curvedHeader';
 import { getGlobalStyles } from '../styles/globalStyles';
 
@@ -124,171 +125,173 @@ const SignUp = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}>
-        {/* Blue curved header */}
-        <CurvedHeader subtitle='Please Enter Details to Register.'></CurvedHeader>
-        
-        {/* Full Name */}
-        <View style={styles.inputContainer}>
-          <Text style={[styles.inputLabel, {marginTop: 50}]}>Full Name</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="John Doe"
-              placeholderTextColor={colors.textSecondary}
-              value={fullName}
-              onChangeText={setFullName}
-            />
-          </View>
-        </View>
-
-        {/* Email */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Email Id</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="JohnDoe@gmail.com"
-              placeholderTextColor={colors.textSecondary}
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-        </View>
-
-         {/* Phone number input */}
-         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Phone Number</Text>
-          <View style={styles.InputContainer}>
-          <TouchableOpacity 
-          style={styles.countryCodeButton}
-          onPress={() => setIsDropdownVisible(true)}
-        >
-          <Text style={styles.countryCodeText}>+{selectedCountry.country_code}</Text>
-          <Text style={styles.downArrow}>▼</Text>
-        </TouchableOpacity>
-        
-        <TextInput
-          style={styles.textInput}
-          placeholder="9 1 2 3 4 5 6 7 8 0"
-          placeholderTextColor={colors.textSecondary}
-          keyboardType="phone-pad"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          maxLength={10}
-        />
-        </View>
-
-        <Modal
-          visible={isDropdownVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setIsDropdownVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.dropdownContainer}>
-                <FlatList
-                  data={countryCodes}
-                  renderItem={renderCountryItem}
-                  keyExtractor={(item : any) => item.country_id}
-                  keyboardShouldPersistTaps="handled"
-                />
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsDropdownVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
+         {/* <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}> */}
+          {/* Blue curved header */}
+          <CurvedHeader subtitle='Please Enter Details to Register.'></CurvedHeader>
+          
+          {/* Full Name */}
+          <View style={styles.inputContainer}>
+            <Text style={[styles.inputLabel, {marginTop: 50}]}>Full Name</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="John Doe"
+                placeholderTextColor={colors.textSecondary}
+                value={fullName}
+                onChangeText={setFullName}
+              />
             </View>
           </View>
-        </Modal>
-        </View>
 
-        {/* Business Name */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Business Name</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="John Doe Pvt Ldt."
-              placeholderTextColor={colors.textSecondary}
-              value={businessName}
-              onChangeText={setBusinessName}
-            />
-          </View>
-        </View>
-
-        {/* Industry Name */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Industry</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter Industry"
-              placeholderTextColor={colors.textSecondary}
-              value={industry}
-              onChangeText={setIndustry}
-            />
-          </View>
-        </View>
-        
-          {/* City Name */}
+          {/* Email */}
           <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>City Name</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter City Name"
-              placeholderTextColor={colors.textSecondary}
-              value={city}
-              onChangeText={setCity}
-            />
+            <Text style={styles.inputLabel}>Email Id</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="JohnDoe@gmail.com"
+                placeholderTextColor={colors.textSecondary}
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
           </View>
-        </View>
 
-          {/* State Name */}
+          {/* Phone number input */}
           <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>State</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter State Name"
-              placeholderTextColor={colors.textSecondary}
-              value={state}
-              onChangeText={setState}
-            />
-          </View>
-        </View>
-
-          {/* Country Name */}
-          <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Country</Text>
-          <View style={styles.InputContainer}>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter Country"
-              placeholderTextColor={colors.textSecondary}
-              value={country}
-              onChangeText={setCountry}
-            />
-          </View>
-        </View>
-        
-        {/* Login button */}
-        <TouchableOpacity style={styles.loginButton} onPress={Next}>
-          <Text style={styles.loginButtonText}>Next</Text>
-        </TouchableOpacity>
-        
-        {/* Sign in text */}
-        <View style={globalStyles.signUpContainer}>
-          <Text style={globalStyles.noAccountText}>Do you already have an account? </Text>
-          <TouchableOpacity onPress={LogIn}>
-            <Text style={globalStyles.signUpText}>Sign in</Text>
+            <Text style={styles.inputLabel}>Phone Number</Text>
+            <View style={styles.InputContainer}>
+            <TouchableOpacity 
+            style={styles.countryCodeButton}
+            onPress={() => setIsDropdownVisible(true)}
+          >
+            <Text style={styles.countryCodeText}>+{selectedCountry.country_code}</Text>
+            <Text style={styles.downArrow}>▼</Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+          
+          <TextInput
+            style={styles.textInput}
+            placeholder="9 1 2 3 4 5 6 7 8 0"
+            placeholderTextColor={colors.textSecondary}
+            keyboardType="phone-pad"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            maxLength={10}
+          />
+          </View>
+
+          <Modal
+            visible={isDropdownVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setIsDropdownVisible(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.dropdownContainer}>
+                  <FlatList
+                    data={countryCodes}
+                    renderItem={renderCountryItem}
+                    keyExtractor={(item : any) => item.country_id}
+                    keyboardShouldPersistTaps="handled"
+                  />
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setIsDropdownVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          </View>
+
+          {/* Business Name */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Business Name</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="John Doe Pvt Ldt."
+                placeholderTextColor={colors.textSecondary}
+                value={businessName}
+                onChangeText={setBusinessName}
+              />
+            </View>
+          </View>
+
+          {/* Industry Name */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Industry</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Industry"
+                placeholderTextColor={colors.textSecondary}
+                value={industry}
+                onChangeText={setIndustry}
+              />
+            </View>
+          </View>
+          
+            {/* City Name */}
+            <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>City Name</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter City Name"
+                placeholderTextColor={colors.textSecondary}
+                value={city}
+                onChangeText={setCity}
+              />
+            </View>
+          </View>
+
+            {/* State Name */}
+            <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>State</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter State Name"
+                placeholderTextColor={colors.textSecondary}
+                value={state}
+                onChangeText={setState}
+              />
+            </View>
+          </View>
+
+            {/* Country Name */}
+            <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Country</Text>
+            <View style={styles.InputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Country"
+                placeholderTextColor={colors.textSecondary}
+                value={country}
+                onChangeText={setCountry}
+              />
+            </View>
+          </View>
+          
+          {/* Login button */}
+          <TouchableOpacity style={styles.loginButton} onPress={Next}>
+            <Text style={styles.loginButtonText}>Next</Text>
+          </TouchableOpacity>
+          
+          {/* Sign in text */}
+          <View style={globalStyles.signUpContainer}>
+            <Text style={globalStyles.noAccountText}>Do you already have an account? </Text>
+            <TouchableOpacity onPress={LogIn}>
+              <Text style={globalStyles.signUpText}>Sign in</Text>
+            </TouchableOpacity>
+          </View>
+        {/* </KeyboardAvoidingView> */}
+        </ScrollView>
     </SafeAreaView>
   );
 }
@@ -297,9 +300,11 @@ export default SignUp
 
 const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
+    const insets = useSafeAreaInsets();
   return StyleSheet.create({
     container: {
       flex: 1,
+      paddingBottom: insets.bottom,
       backgroundColor: colors.background,
     },
     inputContainer: {

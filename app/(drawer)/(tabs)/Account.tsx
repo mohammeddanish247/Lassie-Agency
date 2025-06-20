@@ -88,7 +88,7 @@ export default function Account() {
   }
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
         <View style={globalStyles.circleContainer}>
           <View style={globalStyles.halfCircle} />
@@ -189,6 +189,10 @@ export default function Account() {
 export const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
   return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
     scrollView: {
       flex: 1,
       padding: 15,

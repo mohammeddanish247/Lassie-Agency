@@ -1,5 +1,6 @@
+import { EmployerDetails } from "@/components/Interfaces";
 import { ApiService } from "@/services/userServices";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -9,7 +10,7 @@ export default function EmployeeDetailsScreen() {
   const { job_id } : { job_id : string} = useLocalSearchParams();
   console.log(job_id);
 
-  const [EmpDetails, setEmpDetails] = useState<any | undefined>(undefined);
+  const [EmpDetails, setEmpDetails] = useState<EmployerDetails>();
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function EmployeeDetailsScreen() {
     return (
       <SafeAreaView style={styles.loadingContainer}>
         <StatusBar barStyle="light-content" />
-        <Text style={styles.errorText}>No agreement details found</Text>
+        <Text style={styles.errorText}>No Employee details found</Text>
         {/* <TouchableOpacity style={styles.backButtonPlain} onPress={handleBack}>
           <Text style={styles.backButtonText}>Go Back</Text>
         </TouchableOpacity> */}
@@ -53,7 +54,7 @@ export default function EmployeeDetailsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.profileCard}>
           {/* Share and Like buttons */}
@@ -77,34 +78,34 @@ export default function EmployeeDetailsScreen() {
           </View>
 
           {/* Name and Title */}
-          <Text style={styles.name}>Indrani Sarkar</Text>
+          <Text style={styles.name}>{EmpDetails.employer_name}</Text>
           <View style={styles.badgeContainer}>
-            <Text style={styles.badgeText}>Nanny</Text>
+            <Text style={styles.badgeText}>{EmpDetails.job_category}</Text>
           </View>
 
           {/* Personal Details */}
-          <Text style={styles.detailsText}>25 Years • Single • Self Registered</Text>
+          <Text style={styles.detailsText}>No of Members • {EmpDetails.job_posting_number_of_members}</Text>
 
           {/* Professional Details */}
-          <Text style={styles.detailsText}>Baby Sitters / Nanny • 20 Years Experience</Text>
+          <Text style={styles.detailsText}>Budget • {EmpDetails.job_posting_budget_for_hiring}</Text>
 
           {/* Work Schedule */}
-          <Text style={styles.detailsText}>10-12 HR-Day Shift</Text>
+          <Text style={styles.detailsText}>JobType • {EmpDetails.job_type}</Text>
 
           {/* Location */}
-          <Text style={styles.detailsText}>India, Uttar Pradesh, Noida</Text>
+          <Text style={styles.detailsText}>{EmpDetails.job_posting_locality}, {EmpDetails.job_posting_city}, {EmpDetails.job_posting_state}, {EmpDetails.job_posting_country}</Text>
 
           {/* Salary */}
           <Text style={styles.salary}>
-            $10000<Text style={styles.salaryPeriod}>/Mo</Text>
+            ₹{EmpDetails.job_posting_salary}<Text style={styles.salaryPeriod}>/Month</Text>
           </Text>
 
           {/* Action Buttons */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.primaryButton}>
+            {/* <TouchableOpacity style={styles.primaryButton}>
               <Ionicons name="document-text-outline" size={18} color="white" style={styles.buttonIcon} />
               <Text style={styles.primaryButtonText}>View CV</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity style={styles.secondaryButton}>
               <Text style={styles.secondaryButtonText}>Contact Me</Text>
             </TouchableOpacity>

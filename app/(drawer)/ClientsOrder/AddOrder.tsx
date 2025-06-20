@@ -6,12 +6,13 @@ import { JobTitles, Order } from "@/components/Interfaces";
 import { RadioGroup, RadioOption } from "@/components/RadioButton";
 import { Colors } from "@/constants/Colors";
 import { useLoader } from "@/services/LoaderContext";
+import { UserContext } from "@/services/userContext";
 import { ApiService } from "@/services/userServices";
 import { getGlobalStyles } from "@/styles/globalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from "react-native";
 
 const AddOrder = () => {
@@ -21,6 +22,7 @@ const AddOrder = () => {
     const globalStyles = getGlobalStyles(colorScheme ?? 'light');
     const loginStyles = getStyles(colorScheme ?? 'light');
     const { showLoading, showSuccess } = useLoader();
+    const { userData } = useContext(UserContext);
     const [typeOfMaidService, SetTypeOfMaidService] = useState('');
     const [serventOption, SetServentOption] = useState('');
     const [budget, SetBudget] = useState('');
@@ -67,8 +69,9 @@ const AddOrder = () => {
     }
 
     const SubmitClicked = () =>{
-       showLoading(true)
-        ApiService.addOrder(orderList)
+        if (userData) {
+         showLoading(true)
+        ApiService.addOrder(orderList, userData.user_id)
         .then((res)=>{
         console.log('final responce', res); 
         if (res.error == false) {
@@ -77,7 +80,8 @@ const AddOrder = () => {
         }
         })
         .catch((err)=>{console.log('add Order error', err)})
-        .finally(()=>showLoading(false))
+        .finally(()=>showLoading(false))   
+        }
     }
 
     useEffect(() => {
@@ -209,6 +213,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 16,
     width: '100%',
+    // paddingBottom: insets.bottom
   },
   jobItem: {
     flexDirection: 'row',

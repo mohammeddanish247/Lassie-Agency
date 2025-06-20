@@ -1,9 +1,11 @@
 import { Colors } from '@/constants/Colors';
+import { UserContext } from '@/services/userContext';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import LottieView from 'lottie-react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -91,18 +93,30 @@ const ClientsOrder = () => {
   const styles = getStyle(colorScheme ?? 'light');
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<any[]>([]);
+  const { userData } = useContext(UserContext)
 
   const filteredOrders = orders.filter(order => 
     order.form_id.toString().includes(searchQuery.toLowerCase())
   );
 
   const loadOrders = async() => {
-    setLoading(true);
-    const response = await ApiService.get_order();
-    if (response.isSuccess === 'true') {
-      setOrders(response.result)
+    if (loading || !userData) return;
+    try {
+      setLoading(true);
+      console.log("Order fetching");
+      const response = await ApiService.get_order(userData.user_id);
+      if (response.isSuccess === 'true') {
+        setOrders(response.result)
+        console.log("Order fetched");
+      } else {
+       
+      }
     }
-    setLoading(false)
+    catch (error) {
+      console.error("Failed to fetch Orders:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(()=>{
@@ -118,9 +132,8 @@ const ClientsOrder = () => {
 
   return (
     <SafeAreaView style={globalStyles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'}/>
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.searchContainer}>
               <View style={styles.searchInputContainer}>
                 <TextInput
                   style={styles.searchInput}
@@ -133,12 +146,12 @@ const ClientsOrder = () => {
                 <Ionicons name="search" size={24} color="#fff" />
               </TouchableOpacity>
             </View>
-      {/* Content */}
-        <View style={globalStyles.sectionContainer}>
+        {/* <View style={globalStyles.sectionContainer}> */}
           {loading ? (
             <ActivityIndicator size={'large'} style={{alignItems:'center'}}></ActivityIndicator>
           ) : (
-            <FlatList data={filteredOrders} keyExtractor={(item : any, index) => item.form_id} contentContainerStyle={styles.listContainer}
+            orders.length > 0 ? (
+                          <FlatList data={filteredOrders} keyExtractor={(item : any, index) => item.form_id} contentContainerStyle={styles.listContainer}
               renderItem={({item})=> <OrderCard data={item}></OrderCard>}
                refreshControl={
                   <RefreshControl
@@ -149,9 +162,22 @@ const ClientsOrder = () => {
                   />
                 }
               ></FlatList>
+            ) : (
+               <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <LottieView
+                  style={{width: 200, height: 200, backgroundColor: '#F5F9FF'}}
+                  autoPlay loop = {false}
+                  source={require('@/assets/animations/no-record-found.json')}
+                />
+                <Text style={{fontSize: 16, color: 'gray'}}>No Records Found</Text>
+                <TouchableOpacity onPress={loadOrders} style={styles.button}>
+                  <Text style={styles.ButtonText}>Refresh</Text>
+                </TouchableOpacity>
+              </View>
+            )
           )}
-        </View>
-        <View style={styles.bottomPadding} />
+        {/* </View> */}
+        {/* <View style={styles.bottomPadding} /> */}
 
       {/* Floating Action Button */}
       <TouchableOpacity style={styles.fab} onPress={gotoAddOrder}>
@@ -166,7 +192,8 @@ export const getStyle = (colorScheme : 'light' | 'dark') =>{
   const colors = Colors[colorScheme];
   return StyleSheet.create({
     listContainer: {
-      paddingBottom: 150, // Extra space at bottom to account for 
+      paddingHorizontal: 15,
+      paddingBottom: 100, // Extra space at bottom to account for 
     },
     cardHeader: {
       flexDirection: 'row',
@@ -287,6 +314,17 @@ export const getStyle = (colorScheme : 'light' | 'dark') =>{
     borderBottomRightRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+    button: {
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginTop: 25,
+    backgroundColor: '#5B94E2',
+  },
+    ButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   });
 }

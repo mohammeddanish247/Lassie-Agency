@@ -435,3 +435,26 @@ export interface JobSeeker {
   jobseeker_yourcountry: string;
   iswishlisted: boolean;
 }
+
+export interface EmployerDetails {
+  employer_id: string;
+  employer_name: string | null;
+  employer_number: string | null;
+  employer_address: string | null;
+  employer_message: string | null;
+  job_id: string;
+  job_title: string;
+  job_category: string;
+  job_type: string;
+  job_posting_country: string;
+  job_posting_state: string;
+  job_posting_city: string;
+  job_posting_locality: string;
+  job_posting_budget_for_hiring: string;
+  job_posting_salary: string;
+  job_posting_currency: string;
+  job_posting_gender_preference: string;
+  job_posting_number_of_members: string;
+  job_posting_urgent_is: string;
+  employer_job_posting_time: string;
+}

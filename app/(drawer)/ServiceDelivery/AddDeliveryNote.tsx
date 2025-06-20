@@ -5,15 +5,17 @@ import { AddDeliveryNotes, DNEmployerData, JobTitles, JobTypes, salaryList } fro
 import BottomSheet from "@/components/PopupModal";
 import { Colors } from "@/constants/Colors";
 import { useLoader } from "@/services/LoaderContext";
+import { UserContext } from "@/services/userContext";
 import { ApiService } from "@/services/userServices";
 import { getGlobalStyles } from "@/styles/globalStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from "react-native";
 
 export default function DeliveryNoteScreen() {
   const { showLoading, showSuccess } = useLoader();
+  const { userData } = useContext(UserContext)
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
@@ -241,8 +243,9 @@ export default function DeliveryNoteScreen() {
 
   const SubmitClick = () => {
     if (!validateForm()) return;
-    showLoading(true)
-    ApiService.addServiceDeliveryNote(formData)
+    if (userData) {
+       showLoading(true)
+    ApiService.addServiceDeliveryNote(formData, userData?.user_id)
     .then((res)=>{
       console.log('final responce', res); 
       if (res.error == false) {
@@ -252,7 +255,7 @@ export default function DeliveryNoteScreen() {
     })
     .catch((err)=>{console.log('add delivery note error', err)})
     .finally(()=>showLoading(false))
-
+    }
   };
 
   return (

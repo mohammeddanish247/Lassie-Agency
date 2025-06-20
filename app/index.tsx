@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Alert, FlatList, Modal, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { Alert, FlatList, Modal, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CurvedHeader from '../components/curvedHeader';
 import { useLoader } from '../services/LoaderContext';
 import { ApiService } from '../services/userServices';
@@ -52,8 +53,10 @@ export default function Index() {
     const fetchCountryCodes = () => {
       ApiService.countryListCode()
       .then((data)=> setCountryCodes(data.result))
-      .catch((error)=> console.log('Error fetching country codes:', error))
-      .finally()
+      .catch((error)=> Alert.alert('Error fetching country codes:', error))
+      .finally(()=>{
+        showLoading(false)
+      })
     }
   
     fetchCountryCodes();
@@ -188,115 +191,120 @@ export default function Index() {
   return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-        
-        {/* Blue curved header */}
-        <CurvedHeader subtitle='Please login to continue.'></CurvedHeader>
-        
-        {/* Phone number input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Phone Number</Text>
-          <View style={styles.InputContainer}>
-          <TouchableOpacity 
-            style={styles.countryCodeButton}
-            onPress={() => setIsDropdownVisible(true)}>
-            <Text style={styles.countryCodeText}>+{selectedCountry.country_code}</Text>
-            <Text style={styles.downArrow}>▼</Text>
-          </TouchableOpacity>
-        
-          <TextInput
-            style={styles.textInput}
-            placeholder="Enter Mobile No"
-            placeholderTextColor={colors.textSecondary}
-            keyboardType="phone-pad"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-            maxLength={10}
-          />
-        </View>
-
-      <Modal
-        visible={isDropdownVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsDropdownVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.dropdownContainer}>
-              <FlatList
-                data={countryCodes}
-                renderItem={renderCountryItem}
-                keyExtractor={(item : any) => item.country_id}
+         <ScrollView contentContainerStyle={{ paddingBottom: 40 }}
                 keyboardShouldPersistTaps="handled"
-              />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setIsDropdownVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
+                showsVerticalScrollIndicator={false}>
+          {/* Blue curved header */}
+          <CurvedHeader subtitle='Please login to continue.'></CurvedHeader>
+          
+          {/* Phone number input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Phone Number</Text>
+            <View style={styles.InputContainer}>
+            <TouchableOpacity 
+              style={styles.countryCodeButton}
+              onPress={() => setIsDropdownVisible(true)}>
+              <Text style={styles.countryCodeText}>+{selectedCountry.country_code}</Text>
+              <Text style={styles.downArrow}>▼</Text>
+            </TouchableOpacity>
+          
+            <TextInput
+              style={styles.textInput}
+              placeholder="Enter Mobile No"
+              placeholderTextColor={colors.textSecondary}
+              keyboardType="phone-pad"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              maxLength={10}
+            />
+          </View>
+
+        <Modal
+          visible={isDropdownVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsDropdownVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.dropdownContainer}>
+                <FlatList
+                  data={countryCodes}
+                  renderItem={renderCountryItem}
+                  keyExtractor={(item : any) => item.country_id}
+                  keyboardShouldPersistTaps="handled"
+                />
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsDropdownVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+          </View>
+          
+          {/* Verification code */}
+          <View style={globalStyles.verificationContainer}>
+            <Text style={globalStyles.verificationText}>
+              Please enter the 4 digit code sent to you
+            </Text>
+            <View style={globalStyles.codeInputContainer}>
+              {[0, 1, 2, 3].map((index) => (
+                <TextInput
+                  key={index}
+                  style={globalStyles.codeInput}
+                  keyboardType="number-pad"
+                  maxLength={1}
+                  editable={phoneNumber.length == 10}
+                  value={code[index]}
+                  onChangeText={(text) => handleCodeChange(text, index)}
+                  ref={(ref) => {
+                    codeInputRefs.current[index] = ref;
+                  }}
+                />
+              ))}
+            </View>
+          </View>
+          
+          {/* Resend code button */}
+          <TouchableOpacity style={globalStyles.resendContainer} onPress={handleSendCode} disabled={countdown > 0}>
+            <View style={[globalStyles.resendIconContainer, countdown > 0 && globalStyles.disabledIcon]}>
+            {isSent ? <Ionicons name={'refresh-outline'}  style={globalStyles.resendIcon}></Ionicons> : 
+            <Ionicons name={'arrow-forward-outline'}  style={globalStyles.resendIcon}></Ionicons>}
+            </View>
+            <Text style={[globalStyles.resendText, countdown > 0 && globalStyles.disabledButton]}>
+              {countdown > 0 
+                ? `Resend in ${formatTime(countdown)}` 
+                : isSent ? 'Resend Code' : 'Send Code'}
+            </Text>
+          </TouchableOpacity>
+          
+          {/* Login button */}
+          <TouchableOpacity style={globalStyles.loginButton} onPress={()=> LoginClicked(parseInt(code.join('')))}>
+            <Text style={globalStyles .loginButtonText}>Login</Text>
+          </TouchableOpacity>
+          
+          {/* Sign up text */}
+          <View style={globalStyles.signUpContainer}>
+            <Text style={globalStyles.noAccountText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={SignUp}>
+              <Text style={globalStyles.signUpText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
-        </View>
-        
-        {/* Verification code */}
-        <View style={globalStyles.verificationContainer}>
-          <Text style={globalStyles.verificationText}>
-            Please enter the 4 digit code sent to you
-          </Text>
-          <View style={globalStyles.codeInputContainer}>
-            {[0, 1, 2, 3].map((index) => (
-              <TextInput
-                key={index}
-                style={globalStyles.codeInput}
-                keyboardType="number-pad"
-                maxLength={1}
-                editable={phoneNumber.length == 10}
-                value={code[index]}
-                onChangeText={(text) => handleCodeChange(text, index)}
-                ref={(ref) => {
-                  codeInputRefs.current[index] = ref;
-                }}
-              />
-            ))}
-          </View>
-        </View>
-        
-        {/* Resend code button */}
-        <TouchableOpacity style={globalStyles.resendContainer} onPress={handleSendCode} disabled={countdown > 0}>
-          <View style={[globalStyles.resendIconContainer, countdown > 0 && globalStyles.disabledIcon]}>
-          {isSent ? <Ionicons name={'refresh-outline'}  style={globalStyles.resendIcon}></Ionicons> : 
-          <Ionicons name={'arrow-forward-outline'}  style={globalStyles.resendIcon}></Ionicons>}
-          </View>
-          <Text style={[globalStyles.resendText, countdown > 0 && globalStyles.disabledButton]}>
-            {countdown > 0 
-              ? `Resend in ${formatTime(countdown)}` 
-              : isSent ? 'Resend Code' : 'Send Code'}
-          </Text>
-        </TouchableOpacity>
-        
-        {/* Login button */}
-        <TouchableOpacity style={globalStyles.loginButton} onPress={()=> LoginClicked(parseInt(code.join('')))}>
-          <Text style={globalStyles .loginButtonText}>Login</Text>
-        </TouchableOpacity>
-        
-        {/* Sign up text */}
-        <View style={globalStyles.signUpContainer}>
-          <Text style={globalStyles.noAccountText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={SignUp}>
-            <Text style={globalStyles.signUpText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
 };
 
 export const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
+    const insets = useSafeAreaInsets();
   return StyleSheet.create({
       container: {
         flex: 1,
         backgroundColor: colors.background,
+        paddingBottom: insets.bottom
       },
       inputContainer: {
         marginTop: 80,
@@ -316,21 +324,21 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
         backgroundColor: colors.card,
         overflow: 'hidden',
 
-        // Shadow for iOS
-          shadowColor: colors.border,
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
+        // // Shadow for iOS
+        //   shadowColor: colors.border,
+        //   shadowOffset: { width: 0, height: 1 },
+        //   shadowOpacity: 0.1,
+        //   shadowRadius: 4,
 
-          // Shadow for Android
-          elevation: 1,
+        //   // Shadow for Android
+        //   elevation: 1,
       },
       countryCodeButton: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: colors.primary,
-        paddingHorizontal: 15,
-        paddingVertical: 15,
+        paddingHorizontal: 13,
+        paddingVertical: 13,
       },
       countryCodeText: {
         color: colors.white,
@@ -345,7 +353,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
       textInput: {
         flex: 1,
         paddingHorizontal: 15,
-        fontSize: 20,
+        fontSize: 18,
         fontWeight : 'bold',
         color: colors.text
       },

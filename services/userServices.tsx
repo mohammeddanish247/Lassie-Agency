@@ -175,10 +175,19 @@ const api = axios.create({
       return res.data;
     },
 
-    job_list :  async(page : string) : Promise<any> => {
+    job_list :  async(page : number, dataForFilter?: any ) : Promise<any> => {
       const formData = new FormData();
-      formData.append('page', page); 
+      formData.append('page', page.toString()); 
       formData.append('no_of_data', '10');
+       if(dataForFilter){
+        console.log("dataForFilter "+JSON.stringify(dataForFilter));
+        Object.entries(dataForFilter).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            console.log(key, value);
+            formData.append(key.toString(), value.toString());
+          }
+        });
+      }
         const res = await api.post<any>(job_list,formData)
         return res.data
     },
@@ -293,8 +302,11 @@ const api = axios.create({
       const res = await api.post<any>(skill_list)
       return res.data
     },
-    get_order :  async() => {
-      const res = await api.post<any>(order_list)
+
+    get_order :  async(user_id : string) => {
+      const formData = new FormData();
+      formData.append('user_id', user_id);
+      const res = await api.post<any>(order_list,formData)
       return res.data
     },
 
@@ -350,8 +362,10 @@ const api = axios.create({
       return res.data
     },
 
-    get_service_delivery_list :  async() => {
-      const res = await api.post<any>(ServiceDeliveryList)
+    get_service_delivery_list :  async(user_id: string) => {
+       const formData = new FormData();
+      formData.append('user_id',user_id)
+      const res = await api.post<any>(ServiceDeliveryList,formData)
       return res.data
     },
 
@@ -362,8 +376,12 @@ const api = axios.create({
       return res.data
     },
 
-    get_agreements :  async() => {
-      const res = await api.post<any>(GetAgreement)
+    get_agreements :  async(user_id: string) => {
+      console.log("get agreement "+user_id);
+      
+      const formData = new FormData();
+      formData.append('user_id', user_id);
+      const res = await api.post<any>(GetAgreement,formData)
       return res.data
     },
 
@@ -399,8 +417,9 @@ const api = axios.create({
       return res.data
     },
     
-    addServiceDeliveryNote: async(AddDeliveryNoteData: AddDeliveryNotes)=>{
+    addServiceDeliveryNote: async(AddDeliveryNoteData: AddDeliveryNotes, user_id: string)=>{
       const formData = new FormData();
+      formData.append('user_id',user_id)
       formData.append('ciof_no',AddDeliveryNoteData.ciof_no)
       formData.append('canditate_name',AddDeliveryNoteData.canditate_name)
       formData.append('canditate_mobile',AddDeliveryNoteData.canditate_mobile)
@@ -446,8 +465,9 @@ const api = axios.create({
       return res.data
     },
     
-    addAgreemnet: async(data: AgreementFormData)=>{
+    addAgreemnet: async(data: AgreementFormData, user_id: string)=>{
       const formData = new FormData();
+      formData.append('user_id', user_id);
       formData.append('form_id', data.form_id);
       formData.append('food', data.food);
       formData.append('living', data.living);
@@ -469,8 +489,9 @@ const api = axios.create({
       return res.data
     },
 
-       addOrder: async(data : Order)=>{
+      addOrder: async(data : Order, user_id: string)=>{
       const formData = new FormData();
+      formData.append('user_id', user_id);
       Object.entries(data).forEach(([key, value]) => {
         console.log(key, value);
         formData.append(key, value.toString());

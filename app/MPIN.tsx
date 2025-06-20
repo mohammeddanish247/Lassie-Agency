@@ -112,6 +112,10 @@ const MPIN = () => {
         Alert.alert('Login Failed', userData.message);
         showLoading(false)
       }
+    }).catch(err=>{
+       Alert.alert('Login Failed', err.message);
+    }).finally(()=>{
+       showLoading(false)
     });
   }
   

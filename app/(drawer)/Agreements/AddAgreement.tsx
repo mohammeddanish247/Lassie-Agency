@@ -1,7 +1,8 @@
 import { Colors } from "@/constants/Colors";
+import { UserContext } from "@/services/userContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, useColorScheme, View } from "react-native";
 import { checkbox, CheckboxList } from "../../../components/CheckboxList";
 import { DatePicker } from "../../../components/DatePicker";
@@ -14,6 +15,7 @@ import { getGlobalStyles } from "../../../styles/globalStyles";
 
 export default function AddAgreementScreen() {
   const { showLoading, showSuccess } = useLoader();
+  const { userData } = useContext(UserContext)
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
@@ -196,17 +198,19 @@ export default function AddAgreementScreen() {
 
   const SubmitClick = () => {
     if(!validateForm()) return;
-    showLoading(true)
-    ApiService.addAgreemnet(formData)
-    .then((res)=>{
-      console.log('final responce', res); 
-      if (res.error == false) {
-        showSuccess(res.message)    
-        router.dismissAll();
-      }
-    })
-    .catch((err)=>{console.log('add delivery note error', err)})
-    .finally(()=>showLoading(false))
+    if (userData) {
+      showLoading(true)
+      ApiService.addAgreemnet(formData, userData?.user_id)
+      .then((res)=>{
+        console.log('final responce', res); 
+        if (res.error == false) {
+          showSuccess(res.message)    
+          router.dismissAll();
+        }
+      })
+      .catch((err)=>{console.log('add delivery note error', err)})
+      .finally(()=>showLoading(false))
+    }
   };
 
   return (

@@ -32,7 +32,7 @@ export default function  Candidates() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [refreshData, setRefreshData] = useState('');
+  const [filterValue, setFilterData] = useState('');
 
 
   const categories = [
@@ -47,11 +47,11 @@ export default function  Candidates() {
     if (userData) {
       let response : any
       setLoading(true);
-      if (refreshData != '') {
-        console.log('inside if '+refreshData);
-        response = await ApiService.getCandidateList(userData.user_id,page,refreshData)
+      if (filterValue != '') {
+        console.log('inside if '+filterValue);
+        response = await ApiService.getCandidateList(userData.user_id,page,filterValue)
       } else {
-        console.log('inside else '+refreshData);
+        console.log('inside else '+filterValue);
         response = await ApiService.getCandidateList(userData.user_id,page)
       }
       // console.log(response);
@@ -108,21 +108,21 @@ export default function  Candidates() {
   const FilterByJobValueChange = (data : any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
-      setRefreshData(data);
+      setFilterData(data);
     }
   };
 
   const FilterByOtherValueChange = (data: any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
-      setRefreshData(data);
+      setFilterData(data);
     }
   }
 
   const FilterByAdvanceValueChange = (data : any) => {
     if (Object.keys(data).length > 0) {
       refreshCandidateList(data);
-      setRefreshData(data);
+      setFilterData(data);
     }
   };
 
@@ -137,7 +137,7 @@ export default function  Candidates() {
           setCandidates(allCandidates)
           setHasMore(true);
           setPage(2);
-          // setRefreshData('');
+          // setFilterData('');
         } else {
           console.log(data.message);
         }
@@ -219,18 +219,13 @@ export default function  Candidates() {
               <RefreshControl
                 refreshing={loading}
                 onRefresh={()=>refreshCandidateList('')}
-                colors={['#0066CC']} // Customize for iOS (Android uses progress background)
-                tintColor="#0066CC" // iOS only
+                colors={['#0066CC']}
+                tintColor="#0066CC"
               />
             }
             showsVerticalScrollIndicator={false}
             onEndReached={loadCandidate}
             onEndReachedThreshold={0.5}
-            // ListFooterComponent={ ()=>(
-            //   <View>
-            //   {loading && <ActivityIndicator size={'large'} style={{marginTop:30, marginBottom:30}}/>}
-            //   </View>
-            // )}
           />
         )}
     </SafeAreaView>

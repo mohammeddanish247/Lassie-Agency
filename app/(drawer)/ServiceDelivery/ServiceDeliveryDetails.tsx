@@ -2,8 +2,8 @@ import { ServiceDeliveryDetails } from '@/components/Interfaces';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -13,7 +13,7 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
-  View,
+  View
 } from 'react-native';
 
 const DeliveryDetailsScreen = () => {
@@ -21,8 +21,8 @@ const DeliveryDetailsScreen = () => {
   const data = DDdata ? JSON.parse(DDdata as string) : null;
   const [sdDetails, setSDDetails] = useState<ServiceDeliveryDetails>();
   const [loading, setLoading] = useState(false);
-        const colorScheme = useColorScheme();
-        const globalStyles = getGlobalStyles(colorScheme ?? 'light');
+  const colorScheme = useColorScheme();
+  const globalStyles = getGlobalStyles(colorScheme ?? 'light');
 
   const fetchDetails = async() =>{
     if (loading) return;
@@ -35,9 +35,14 @@ const DeliveryDetailsScreen = () => {
     setLoading(false)
   }
 
-  useEffect(()=>{
-    fetchDetails();
-  },[])
+  // useEffect(()=>{
+  //   fetchDetails();
+  // },[])
+
+   useFocusEffect(
+        useCallback(() => {
+          fetchDetails();
+    },[]))
 
   const VerifyOTP = (user: string) => {
     console.log("Cliked Verify OTP");
@@ -154,10 +159,6 @@ const DeliveryDetailsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f2f5',
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

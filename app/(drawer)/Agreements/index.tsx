@@ -1,13 +1,16 @@
 import { Agreement } from '@/components/Interfaces';
+import { UserContext } from '@/services/userContext';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import LottieView from 'lottie-react-native';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Linking,
+  RefreshControl,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -22,8 +25,9 @@ const Agreements = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [agreementList, setAgreementList] = useState<Agreement[]>([]);
   const [loading, setLoading] = useState(false);
-        const colorScheme = useColorScheme();
-        const globalStyles = getGlobalStyles(colorScheme ?? 'light');
+  const { userData } = useContext(UserContext)
+  const colorScheme = useColorScheme();
+  const globalStyles = getGlobalStyles(colorScheme ?? 'light');
   
    // Filter agreements based on search query
    const filteredAgreements = agreementList.filter(agreement => 
@@ -31,16 +35,19 @@ const Agreements = () => {
   );
 
   const fetchAgreement = async() =>{
-    if (loading) return;
-    setLoading(true);
-    const response = await ApiService.get_agreements()
-    if (response.isSuccess === 'true') {
-        setAgreementList((existingItems) => [...existingItems, ...response.result]);
+    if (loading || !userData) return;
+    try {
+      setLoading(true);
+      const response = await ApiService.get_agreements(userData.user_id);
+      if (response.isSuccess === 'true') {
+        setAgreementList(response.result);
         console.log("Agreement fetched");
-        
-    //   setPage((prePage) => prePage + 1);
+      }
+    } catch (error) {
+      console.error("Failed to fetch agreements:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false)
   }
 
   useEffect(()=>{
@@ -129,13 +136,35 @@ const Agreements = () => {
         <View>
             <ActivityIndicator size={'large'} style={{alignItems:'center'}}></ActivityIndicator>
         </View> ) : (
+        filteredAgreements.length > 0 ? (
         <FlatList
           data={filteredAgreements}
           keyExtractor={(item) => item.form_no.toString()} // or another unique identifier
           renderItem={({ item }) => <AgreementCard data={item} />}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={()=>fetchAgreement()}
+              colors={['#0066CC']} // Customize for iOS (Android uses progress background)
+              tintColor="#0066CC" // iOS only
+            />
+          }
         />
+        ) : (
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <LottieView
+            style={{width: 200, height: 200, backgroundColor: '#F5F9FF'}}
+            autoPlay loop = {false}
+            source={require('@/assets/animations/no-record-found.json')}
+          />
+          <Text style={{fontSize: 16, color: 'gray'}}>No Records Found</Text>
+            <TouchableOpacity onPress={fetchAgreement} style={styles.button}>
+              <Text style={styles.ButtonText}>Refresh</Text>
+            </TouchableOpacity>
+        </View>
+      )
       )}
       
       {/* Floating Action Button */}
@@ -274,6 +303,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+  },
+    button: {
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginTop: 25,
+    backgroundColor: '#5B94E2',
+  },
+    ButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

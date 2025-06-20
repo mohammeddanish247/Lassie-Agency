@@ -18,7 +18,7 @@ export default function Notifications() {
   );
   
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />  
       <View style={globalStyles.circleContainer}>
         <View style={globalStyles.halfCircle} />
@@ -34,6 +34,9 @@ export default function Notifications() {
 export const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
   return StyleSheet.create({
-
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
   });
 }

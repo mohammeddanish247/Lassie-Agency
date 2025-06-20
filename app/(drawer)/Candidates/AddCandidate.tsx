@@ -823,9 +823,9 @@ const personalInfoValid = (): boolean => {
 
 
     return (
-        <SafeAreaView style={globalStyles.container}>
+        <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
-        <View style={globalStyles.container}>
+        <View style={styles.container}>
              <View style={styles.container}>
                 <View style={styles.buttonContainer}>
                     <Text style={styles.formText}>{getStepTitle(step)}</Text>
@@ -838,7 +838,7 @@ const personalInfoValid = (): boolean => {
        {/* personal Information */}
         {step === 1 && 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <PersonalInfo data={formData} 
                         onChange={(field, value)=> handlePersonalInfoChange(field, value)}
                         image= {candidateDocs}
@@ -852,7 +852,7 @@ const personalInfoValid = (): boolean => {
         {/* Job Details */}
         {step === 2 && 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <JobDetails data={formData} 
                         onChange={(field, value)=> handlePersonalInfoChange(field, value)}
                         checkBoxList = {lists}
@@ -864,7 +864,7 @@ const personalInfoValid = (): boolean => {
         {/* Experiance */}
         {step === 3 && 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <Experiences  data={formData}
                         onTotalExpChange={handleTotalExperienceChange}
                         onAddExperience={handleAddExperience}></Experiences>
@@ -874,7 +874,7 @@ const personalInfoValid = (): boolean => {
         {/* Education Info */}
         {step === 4 && 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                    <EducationalInfo data={formData} 
                         onChange={(field, value)=> handlePersonalInfoChange(field, value)}
                         checkBoxList = {lists}
@@ -886,7 +886,7 @@ const personalInfoValid = (): boolean => {
         {/* Attachment */}
         {step === 5 && 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                    <AttachmentAndVerification data={formData} 
                             onChange={(field, value)=> handlePersonalInfoChange(field, value)}
                             image= {candidateDocs}
@@ -990,8 +990,10 @@ const personalInfoValid = (): boolean => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-   flex:1, width:'100%', padding:10,
+  container: {
+    flex : 1,
+    backgroundColor: '#F5F9FF',
+    padding: 5,
   },
   indicatorContainer: {
     flexDirection: 'row',
@@ -1053,8 +1055,9 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     borderRadius: 20,
+    marginTop: 5,
   },
   backButton: {
     backgroundColor: '#E7E7E7',

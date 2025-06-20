@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EBF2FA',
+    // paddingBottom: insets.bottom
   },
   loadingContainer: {
     flex: 1,

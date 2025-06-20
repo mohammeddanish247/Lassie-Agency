@@ -1,12 +1,16 @@
 import { Colors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const getGlobalStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
+
   return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: colors.background,
+      paddingBottom: insets.bottom
     },
     InputContainer: {
       flexDirection: 'row-reverse',

@@ -7,16 +7,16 @@ import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Image,
-    Linking,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    useColorScheme,
-    View
+  ActivityIndicator,
+  Image,
+  Linking,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useColorScheme,
+  View
 } from 'react-native';
 
 interface RechargeOption {

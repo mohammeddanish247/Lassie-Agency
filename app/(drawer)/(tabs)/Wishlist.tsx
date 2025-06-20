@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, SafeAreaView, StatusBar, StyleSheet, Text, ToastAndroid, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, SafeAreaView, StatusBar, StyleSheet, Text, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export default function Wishlist() {
   const { userData } = useContext(UserContext);
@@ -193,7 +193,7 @@ export default function Wishlist() {
   }
   
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
        <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
           <View style={globalStyles.circleContainer}>
             <View style={globalStyles.halfCircle} />
@@ -213,6 +213,9 @@ export default function Wishlist() {
             source={require('@/assets/animations/no-record-found.json')}
           />
           <Text style={{fontSize: 16, color: 'gray'}}>No Records Found</Text>
+          <TouchableOpacity onPress={loadCandidate} style={styles.button}>
+                        <Text style={styles.ButtonText}>Refresh</Text>
+                      </TouchableOpacity>
         </View>
         ) : (
           <FlatList
@@ -245,6 +248,10 @@ export default function Wishlist() {
 export const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
   return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
     listContainer: {
       padding: 15,
       paddingBottom: 80, // Extra space at bottom to account for navigation
@@ -266,5 +273,16 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
       shadowRadius: 3.84,
       zIndex: 100
     },
+      button: {
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginTop: 25,
+    backgroundColor: '#5B94E2',
+  },
+    ButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
   });
 }

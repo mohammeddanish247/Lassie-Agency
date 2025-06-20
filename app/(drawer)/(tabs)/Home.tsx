@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, InteractionManager, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -11,9 +12,6 @@ import { ApiService } from '../../../services/userServices';
 import { getGlobalStyles } from '../../../styles/globalStyles';
 
 let remoteSlides : { id: string; image: string }[] = []; 
-
-// let maidProfiles: MaidProfiles[] = [];
-// let jobListing : JobListing[] = [];
 
 export default function Home({navigation} : {navigation : any}) {
   const router = useRouter();
@@ -39,19 +37,13 @@ export default function Home({navigation} : {navigation : any}) {
       }
     })
   }
+
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       setIsReady(true);
       getBanners();
     });
   }, []);
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     navigation.getParent()?.setOptions({
-  //       headerTitle: 'Home',
-  //     });
-  //   }, [])
-  // );
 
   useEffect(()=>{
     showLoading(true)
@@ -63,7 +55,7 @@ export default function Home({navigation} : {navigation : any}) {
         })
         .catch((err) => console.log('category_list error', err)),
   
-      ApiService.job_list('1')
+      ApiService.job_list(1)
         .then((data) => {
           // console.log('job_list', data.result);
           setJobList(data.result)
@@ -75,24 +67,12 @@ export default function Home({navigation} : {navigation : any}) {
       });
   },[])
 
-
-  const renderCategory = ({ item }: { item: { id: string; name: string; icon: string } }) => (
-    <View>
-    {/* <ScrollView horizontal={true}> */}
-    <TouchableOpacity style={styles.categoryButton}>
-      <View style={styles.categoryIcon}>
-        {/* <Text style={styles.categoryIconText}>{item.icon}</Text> */}
-        <Text style={styles.categoryIconText}>{item.name}</Text>
-      </View>
-    </TouchableOpacity>
-    {/* </ScrollView> */}
-  </View>
-  );
   
 const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
     <TouchableOpacity style={[styles.profileItem, globalStyles.card]} key={profile.category_id}>
       <View style={styles.profileIconContainer}>
-        <Text style={styles.profileIcon}>{profile.category_icon}</Text>
+        <Ionicons name='person' size={24} color={'#fff'} style={{alignItems:'center'}}></Ionicons>
+        {/* <Text style={styles.profileIcon}>{profile.category_icon}</Text> */}
       </View>
       <View style={styles.profileInfo}>
         <Text style={styles.profileTitle}>{profile.category_name}</Text>
@@ -104,20 +84,20 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
   
   const gotoJobListScreen = ()=>{
     router.push({
-      pathname: '/Jobs',
-      params: { unParsedData: JSON.stringify(JobList) },
+      pathname: '/(drawer)/(jobs)/Jobs',
+      // params: { unParsedData: JSON.stringify(JobList) },
     });
   }
 
   const GotoViewDetails = useCallback((jobid: string) => {
     router.push({
-      pathname: '/EmpDetails',
+      pathname: '/(drawer)/(jobs)/EmpDetails',
       params: { job_id: jobid },
     });
   }, []);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
         <View style={globalStyles.circleContainer}>
           <View style={globalStyles.halfCircle} />
@@ -168,6 +148,10 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
 export const getStyles = (colorScheme: 'light' | 'dark') => {
   const colors = Colors[colorScheme];
  return StyleSheet.create({
+      container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
   slide: {
     flex: 1,
     position: 'relative',
