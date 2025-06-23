@@ -1,11 +1,12 @@
-import { UserContext } from "@/services/userContext"
-import { ApiService } from "@/services/userServices"
-import { getGlobalStyles } from "@/styles/globalStyles"
-import { FontAwesome5, FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons"
-import { useLocalSearchParams } from "expo-router"
-import type React from "react"
-import { useContext, useEffect, useState } from "react"
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import PDFGenerator, { type PDFGeneratorRef } from "@/components/PdfGenerator";
+import { UserContext } from "@/services/userContext";
+import { ApiService } from "@/services/userServices";
+import { getGlobalStyles } from "@/styles/globalStyles";
+import { FontAwesome5, FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
+import type React from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface CandidateData {
   registration_type: string
@@ -44,41 +45,42 @@ interface CandidateData {
   jobseeker_pcc: string
 }
 
-const sampleData: CandidateData = {
-  registration_type: "By Self",
-  canditate_name: "Kylian Mbappe",
-  job_title: "Governess",
-  job_type: "8 HR-Morning Shift",
-  canditate_location: "NA",
-  canditate_salary: "95000-100000",
-  canditate_experience: "5",
-  canditate_marital_status: "Unmarried",
-  canditate_currency: "France — EUR — €",
-  canditate_age: "31",
-  jobseeker_ethnicity: "Tribes / Advasi",
-  jobseeker_skills: "All Rounder Cook, Computer Skills, Continental Cook, Cooking",
-  jobseeker_gender: "male",
-  jobseeker_passport: "yes",
-  jobseeker_yourcity: "Norte Dam",
-  jobseeker_yourstate: "Paris",
-  jobseeker_yourcountry: "France",
-  iswishlisted: false,
+const sampleCandidate = {
+  canditate_photo: "https://example.com/photo.jpg",
+  canditate_name: "John Doe",
+  job_title: "Software Engineer",
+  jobseeker_yourcity: "New York",
+  jobseeker_yourstate: "NY",
+  registration_type: "Premium",
+  canditate_age: "28",
+  jobseeker_gender: "Male",
+  canditate_marital_status: "Single",
   jobseeker_religion: "Christian",
-  jobseeker_height: "183 cm",
-  jobseeker_weight: "74 kg",
-  jobseeker_experience: "5",
-  jobseeker_visa_type: "Visit",
-  jobseeker_visa_expiry_date: "19/06/2027",
-  jobseeker_visa_Available_from: "19/06/2023",
-  jobseeker_languages: "French",
-  jobseeker_ready_to_work_Country: "BAHAMAS",
-  jobseeker_ready_to_work_State: "Any state",
-  jobseeker_ready_to_work_City: "Any",
-  jobseeker_ready_to_work_Locality: "Any Location",
-  jobseeker_education: "graduate & Above",
-  jobseeker_addressproof: "Driving License",
-  jobseeker_idproof: "PAN Card",
-  jobseeker_pcc: "yes",
+  jobseeker_ethnicity: "Caucasian",
+  jobseeker_height: "5'10\"",
+  jobseeker_weight: "70kg",
+  jobseeker_languages: "English, Spanish",
+  job_type: "Full-time",
+  canditate_experience: "5 years",
+  canditate_salary: "80000",
+  canditate_currency: "USD",
+  jobseeker_skills: "React Native, JavaScript, TypeScript, Node.js",
+  experience_Job_title: "Senior Developer",
+  experience_Location: "San Francisco, CA",
+  experience_Salary: "75000 USD",
+  experience_From_To: "2020 - 2023",
+  experience_Nature_of_Work: "Mobile app development",
+  experience_Reason_for_leaving: "Career growth",
+  jobseeker_passport: "Yes",
+  jobseeker_visa_type: "H1B",
+  jobseeker_visa_expiry_date: "2025-12-31",
+  jobseeker_visa_Available_from: "2024-01-01",
+  jobseeker_ready_to_work_Country: "USA",
+  jobseeker_ready_to_work_State: "California",
+  jobseeker_education: "Bachelor's in Computer Science",
+  jobseeker_addressproof: "Utility Bill",
+  jobseeker_idproof: "Driver's License",
+  jobseeker_pcc: "Available",
 }
 
 const InfoRow = ({
@@ -158,7 +160,7 @@ const formatSalary = (salary: string, currency: string = '') => {
 }
 
 export default function CandidateProfile() {
-  //  const colorScheme = useColorScheme();
+      const pdfGeneratorRef = useRef<PDFGeneratorRef>(null)
       const params : any = useLocalSearchParams();
       console.log(params.id);
       const { userData } = useContext(UserContext);
@@ -179,7 +181,15 @@ export default function CandidateProfile() {
       useEffect(()=>{
         getCVDetails();
       },[])
-  // const candidate = sampleData
+
+
+  const handleSharePress = async () => {
+    try {
+      await pdfGeneratorRef.current?.sharePDF()
+    } catch (error) {
+      console.error("Error sharing PDF:", error)
+    }
+  }
 
   return (
     <SafeAreaView style={getGlobalStyles('light').container}>
@@ -193,11 +203,13 @@ export default function CandidateProfile() {
             style={styles.profileImage}
             resizeMode="cover"
           />
-          <TouchableOpacity style={styles.shareButton}>
+          <TouchableOpacity style={styles.shareButton} onPress={handleSharePress}>
             <FontAwesome6 name='share' size={20} color='#5B94E2'></FontAwesome6>
             {/* <Ionicons name="share-outline" size={20} color="#6B9EFF" /> */}
           </TouchableOpacity>
         </View>
+
+        <PDFGenerator ref={pdfGeneratorRef} candidate={candidate} />
 
         <View style={styles.headerInfo}>
           <View style={styles.row}>
@@ -211,7 +223,6 @@ export default function CandidateProfile() {
             </Text>
           </View> 
         </View>
-            
 
         {/* Personal Information */}
        <View style={styles.content}>

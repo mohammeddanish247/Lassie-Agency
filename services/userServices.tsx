@@ -55,6 +55,7 @@ const varifyCandidate = 'candiate_verify_otp_delivery_notes.php'
 const getCV = 'view_cv.php'
 const getBanners = 'banner_list.php'
 const RemainingContacts = 'canditate_seen_by_agency.php'
+const RemainingContacts2 = 'employer_seen_by_agency.php'
 const previous_package_book = 'previous_package_book.php'
 
 
@@ -549,6 +550,15 @@ const api = axios.create({
       formData.append('user_id', uid);
       formData.append('type', 'Agency');
       const res = await api.post<any>(RemainingContacts, formData)
+      return res.data
+    },
+
+    ViewEmployer : async (eid: string, uid:string) => {
+      const formData = new FormData();
+      formData.append('emp_id', eid);
+      formData.append('user_id', uid);
+      formData.append('type', 'Agency');
+      const res = await api.post<any>(RemainingContacts2, formData)
       return res.data
     },
 

@@ -1,9 +1,11 @@
 import { EmployerDetails } from "@/components/Interfaces";
+import BottomSheet from "@/components/PopupModal";
+import RechargeScreen from "@/components/Recharge";
 import { ApiService } from "@/services/userServices";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, Share, ShareContent, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function EmployeeDetailsScreen() {
 
@@ -12,6 +14,12 @@ export default function EmployeeDetailsScreen() {
 
   const [EmpDetails, setEmpDetails] = useState<EmployerDetails>();
   const [loading, setLoading] = useState<boolean>(true);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalContent, setModalContent] = useState<{
+      title: string;
+      content: React.ReactNode;
+    }>({ title: '', content: null });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +37,37 @@ export default function EmployeeDetailsScreen() {
     };
     fetchData();
   }, [job_id]);
+
+  const handleContact = (id : string) =>{
+    setModalContent({
+      title: '',
+      content: <RechargeScreen candidateID={id} closeModal={()=>setModalVisible(false)}></RechargeScreen>,
+    });
+    setModalVisible(true)
+  }
+
+  const shareProfile = async () => {
+    try {
+       let shareText = `Employer Profile\n\n`;
+        shareText += `Name: ${EmpDetails?.employer_name}\n`;
+        shareText += `Job Title: ${EmpDetails?.job_title}\n`;
+        shareText += `Location: ${EmpDetails?.job_posting_city}, ${EmpDetails?.job_posting_state}, ${EmpDetails?.job_posting_country}\n\n`;
+        shareText += `- Budget: ${EmpDetails?.job_posting_budget_for_hiring} years\n`;
+        shareText += `- JobType: ${EmpDetails?.job_type}\n`;
+        shareText += `- No of Members: ${EmpDetails?.job_posting_number_of_members}\n`;
+        shareText += `- Salary: ${EmpDetails?.job_posting_salary}\n`;
+        
+      const shareOptions: ShareContent = {
+        title: 'Candidate Profile',  // Android
+        message: shareText,
+      };
+
+      await Share.share(shareOptions);
+    } catch (error) {
+      console.error('Error sharing PDF:', error);
+      Alert.alert('Error', 'Failed to share PDF');
+    }
+  };
 
   if (loading) {
     return (
@@ -59,13 +98,11 @@ export default function EmployeeDetailsScreen() {
         <View style={styles.profileCard}>
           {/* Share and Like buttons */}
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.iconButton}>
+            {/* <TouchableOpacity style={styles.iconButton}>
               <MaterialCommunityIcons name="share-outline" size={24} color="#777" />
-              {/* <Ionicons name="share-outline" size={22} color="#777" style={{marginTop: 2, marginLeft: 1}}/> */}
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <MaterialCommunityIcons name="cards-heart-outline" size={24} color="#777" />
-              {/* <Ionicons name="heart-outline" size={24} color="#777" style={{marginTop: 2, marginLeft: 1}}/> */}
+            </TouchableOpacity> */}
+            <TouchableOpacity style={styles.iconButton} onPress={shareProfile}>
+              <MaterialCommunityIcons name="share-outline" size={24} color="#777" />
             </TouchableOpacity>
           </View>
 
@@ -106,11 +143,15 @@ export default function EmployeeDetailsScreen() {
               <Ionicons name="document-text-outline" size={18} color="white" style={styles.buttonIcon} />
               <Text style={styles.primaryButtonText}>View CV</Text>
             </TouchableOpacity> */}
-            <TouchableOpacity style={styles.secondaryButton}>
+            <TouchableOpacity style={styles.secondaryButton} onPress={()=>handleContact(EmpDetails.employer_id)}>
               <Text style={styles.secondaryButtonText}>Contact Me</Text>
             </TouchableOpacity>
           </View>
         </View>
+        <BottomSheet 
+          visible={modalVisible} 
+          onClose={ ()=> setModalVisible(false)}
+          title={modalContent.title}>{modalContent.content}</BottomSheet>
       </ScrollView>
     </SafeAreaView>
   )
@@ -167,7 +208,7 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     width: "100%",
     marginBottom: 8,
   },

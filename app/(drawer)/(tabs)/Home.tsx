@@ -22,6 +22,7 @@ export default function Home({navigation} : {navigation : any}) {
   const { showLoading } = useLoader();
   const [JobList, setJobList] = useState<JobListing[]>([]);
   const [maidProfiles, setMaidProfiles] = useState<MaidProfiles[]>([]);
+
   
   const [isReady, setIsReady] = useState(false);
 
@@ -122,6 +123,7 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
           <FlatList data={JobList.slice(0,2)} scrollEnabled={false} renderItem={({item}) => (
               <JobCard
                 job={item}
+                // onContact={handleContact}
                 onViewDetails={()=> GotoViewDetails(item.job_id)}
               />
             )}></FlatList>

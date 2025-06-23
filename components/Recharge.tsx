@@ -26,14 +26,16 @@ interface RechargeOption {
 }
 
 type RechargeOp = {
-    candidateID: string
+    candidateID: string;
     closeModal: () => void;
+    isEmployer?: boolean;
 }
 
-const RechargeScreen = ({candidateID, closeModal} : RechargeOp) => {
-      const colorScheme = useColorScheme();
-      const colors = Colors[colorScheme ?? 'light'];
-      const globalStyles = getGlobalStyles(colorScheme ?? 'light');
+const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : RechargeOp) => {
+
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const globalStyles = getGlobalStyles(colorScheme ?? 'light');
   const [selectedOption, setSelectedOption] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [balance, setBalance] = useState(0);
@@ -64,14 +66,26 @@ const RechargeScreen = ({candidateID, closeModal} : RechargeOp) => {
                    setisExpired(true)
                 } else {
                     setisExpired(false)
-                    const res = await ApiService.ViewCandidate(candidateID,userData?.user_id);
-                    if (res.isSuccess == 'true') {
-                        if (res.canditate_details[0].allow_contact >0) {
-                            setBalance(res.canditate_details[0].allow_contact);
-                            setCandidate(res.canditate_details[0]);
-                        }
+                    if (isEmployer) {
+                      const res = await ApiService.ViewEmployer(candidateID,userData?.user_id);
+                      if (res.isSuccess == 'true') {
+                          if (res.canditate_details[0].allow_contact >0) {
+                              setBalance(res.canditate_details[0].allow_contact);
+                              setCandidate(res.canditate_details[0]);
+                          }
+                      } else {
+                          setisExpired(true)
+                      }
                     } else {
-                        setisExpired(true)
+                      const res = await ApiService.ViewCandidate(candidateID,userData?.user_id);
+                      if (res.isSuccess == 'true') {
+                          if (res.canditate_details[0].allow_contact >0) {
+                              setBalance(res.canditate_details[0].allow_contact);
+                              setCandidate(res.canditate_details[0]);
+                          }
+                      } else {
+                          setisExpired(true)
+                      }
                     }
                 }
             }
@@ -155,63 +169,98 @@ const RechargeScreen = ({candidateID, closeModal} : RechargeOp) => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
          {balance > 0 ? (
-        <View>
+          <View>
             <Text style={styles.title}>Contact Candidate</Text>
             <View style={styles.balanceContainer}>
-            <View style={styles.balanceRow}>
-                <Text style={styles.balanceLabel}>Remaining Balance:</Text>
-                <View style={styles.balanceAmount}>
-                <MaterialIcons name='contacts' size={20} color='#5B94E2'></MaterialIcons>
-                <Text style={styles.balanceNumber}>{balance}</Text>
-                </View>
-            </View>
+              <View style={styles.balanceRow}>
+                  <Text style={styles.balanceLabel}>Remaining Balance:</Text>
+                  <View style={styles.balanceAmount}>
+                  <MaterialIcons name='contacts' size={20} color='#5B94E2'></MaterialIcons>
+                  <Text style={styles.balanceNumber}>{balance}</Text>
+                  </View>
+              </View>
             </View>
             <View style={globalStyles.card}>
-            <View style={styles.profileSection}>
-            <View style={styles.profileImageContainer}>
-                <Image source={{ uri: candidate.canditate_photo}}  style={styles.profileImage} />
+              <View style={styles.profileSection}>
+                <View style={styles.profileImageContainer}>
+                    <Image source={{ uri: candidate.canditate_photo}}  style={styles.profileImage} />
+                </View>
+                
+                <View style={styles.profileInfo}>
+                    <View style={styles.nameRow}>
+                    <Text style={styles.profileName}>{candidate.canditate_name}</Text>
+                    <View style={styles.badgeContainer}>
+                        <Text style={styles.badgeText}>{candidate.job_title}</Text>
+                    </View>
+                    </View>
+                    
+                    <View style={styles.detailsRow}>
+                    <Text style={styles.detailText}>{candidate.canditate_age} Years</Text>
+                    <Text style={styles.dot}>•</Text>
+                    <Text style={styles.detailText}>{candidate.canditate_marital_status}</Text>
+                    <Text style={styles.dot}>•</Text>
+                    <Text style={styles.detailText}>{candidate.registration_type}</Text>
+                    </View>
+                    
+                    <View style={styles.detailsRow}>
+                    <Text style={styles.roleText}>{candidate.job_title}</Text>
+                    <Text style={styles.dot}>•</Text>
+                    <Text style={styles.experienceText}>{candidate.canditate_experience} experience</Text>
+                    </View>
+
+                    <View style={styles.detailsRow}>
+                    <Text style={styles.shiftText}>{candidate.job_type}</Text>
+                    </View>
+                    <View>
+                    <Text style={styles.shiftText}>{candidate.jobseeker_yourcity},{candidate.jobseeker_yourstate},{candidate.jobseeker_yourcountry}</Text>
+                    </View>
+                    <View>
+                    <Text style={styles.phone_no}>Phone No. +91 {candidate.canditate_phone}</Text>
+                    </View>
+                </View>
+              </View>
+
+            </View>
+                            <View style={styles.bottomContainer}>
+                <TouchableOpacity style={styles.rechargeButton} onPress={Callme}>
+                <Text style={styles.rechargeButtonText}>Call Candidate</Text>
+                </TouchableOpacity>
+              </View>
+              
+             <View>
+              <Text style={[styles.title, {marginTop: 50}]}>Recharge Balance</Text>
+              <Text style={styles.subtitle}>Unlock the candidate’s contact details by recharging your balance.</Text>
+              {/* <View style={styles.balanceContainer}>
+              <View style={styles.balanceRow}>
+                <Text style={styles.balanceLabel}>Remaining Balance:</Text>
+                <View style={styles.balanceAmount}>
+                  <MaterialIcons name='contacts' size={20} color='#5B94E2'></MaterialIcons>
+                  <Text style={styles.balanceNumber}>{balance}</Text>
+                </View>
+              </View>
+              </View> */}
+              <View style={styles.optionsContainer}>
+                <View style={styles.row}>
+                  {rechargeOptions.slice(0, 3).map(option => renderRechargeOption(option))}
+                </View>
+                <View style={styles.row}>
+                  {rechargeOptions.slice(3, 6).map(option => renderRechargeOption(option))}
+                </View>
+                <View style={styles.row}>
+                  {renderRechargeOption(rechargeOptions[6], true)}
+                </View>
+              </View>
+              <View style={styles.bottomContainer}>
+                  <TouchableOpacity style={styles.rechargeButton} onPress={handleRecharge}>
+                  <Text style={styles.rechargeButtonText}>Recharge</Text>
+                  </TouchableOpacity>
+              </View>
             </View>
             
-            <View style={styles.profileInfo}>
-                <View style={styles.nameRow}>
-                <Text style={styles.profileName}>{candidate.canditate_name}</Text>
-                <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{candidate.job_title}</Text>
-                </View>
-                </View>
-                
-                <View style={styles.detailsRow}>
-                <Text style={styles.detailText}>{candidate.canditate_age} Years</Text>
-                <Text style={styles.dot}>•</Text>
-                <Text style={styles.detailText}>{candidate.canditate_marital_status}</Text>
-                <Text style={styles.dot}>•</Text>
-                <Text style={styles.detailText}>{candidate.registration_type}</Text>
-                </View>
-                
-                <View style={styles.detailsRow}>
-                <Text style={styles.roleText}>{candidate.job_title}</Text>
-                <Text style={styles.dot}>•</Text>
-                <Text style={styles.experienceText}>{candidate.canditate_experience} experience</Text>
-                </View>
+          </View>
 
-                <View style={styles.detailsRow}>
-                <Text style={styles.shiftText}>{candidate.job_type}</Text>
-                </View>
-                <View>
-                <Text style={styles.shiftText}>{candidate.jobseeker_yourcity},{candidate.jobseeker_yourstate},{candidate.jobseeker_yourcountry}</Text>
-                </View>
-                <View>
-                <Text style={styles.phone_no}>Phone No. +91 {candidate.canditate_phone}</Text>
-                </View>
-            </View>
-            </View>
-        </View>
-                <View style={styles.bottomContainer}>
-                    <TouchableOpacity style={styles.rechargeButton} onPress={Callme}>
-                    <Text style={styles.rechargeButtonText}>Call Me</Text>
-                    </TouchableOpacity>
-                </View>
-        </View>
+
+          
       ) : (
         <View>
           <Text style={styles.title}>Recharge Balance</Text>
@@ -295,6 +344,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   optionsContainer: {
+    marginTop: 15,
     marginBottom: 15,
   },
   row: {
@@ -340,9 +390,9 @@ const styles = StyleSheet.create({
   bottomContainer: {
     paddingHorizontal: 20,
     paddingVertical: 16,
-    paddingBottom: 32,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
+    paddingBottom: 52,
+    borderBottomWidth: 2,
+    borderBottomColor: '#F0F0F0',
   },
   rechargeButton: {
     backgroundColor: '#5B94E2',

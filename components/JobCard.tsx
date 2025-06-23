@@ -9,11 +9,13 @@ import { JobListing } from './Interfaces';
 interface JobCardProps {
   job: JobListing;
   onViewDetails?: () => void;
-  onContact?: () => void;
+  // onContact: (jobID : string) => void;
   onToggleFavorite?: () => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({job, onViewDetails, onContact, onToggleFavorite,}) => {
+const JobCard: React.FC<JobCardProps> = ({job, onViewDetails, 
+  // onContact, 
+  onToggleFavorite,}) => {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme ?? 'light'];
     const styles = getStyles(colorScheme ?? 'light');
@@ -66,12 +68,12 @@ const JobCard: React.FC<JobCardProps> = ({job, onViewDetails, onContact, onToggl
         >
           <Text style={styles.viewDetailsText}>View Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={styles.contactButton}
-          onPress={onContact}
+          onPress={()=>onContact(job.job_id)}
         >
           <Text style={styles.contactText}>Contact</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity 
           style={styles.favoriteButton}
           onPress={onToggleFavorite}
