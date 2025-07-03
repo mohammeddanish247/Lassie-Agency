@@ -25,6 +25,56 @@ const VerifyOTP = () => {
     const [OTP, setOTP] = useState('');
     const [isOtpComplete, setIsOtpComplete] = React.useState(false);
     
+    const sendOTPSignUp = () =>{
+        SendOtpRequest(mobileNumber).then(data=>{
+        console.log('requesting otp to '+formData.agency_mobaile);
+        if (data.error == false) {
+            setCountdown(60);
+            setIsSent(true);
+            setOTP(data.user_otp)
+            } else {
+            Alert.alert('OTP Alert',`${data.message}`,[
+                {
+                text: 'OK',
+                onPress: () => {
+                    router.back();
+                },
+                },
+            ],
+            { cancelable: false })
+            }
+        }).catch(err=>{
+            console.error(JSON.stringify(err));
+        }).finally(()=>{
+            showLoading(false)
+        })
+    }
+
+    const sendOTPForgotMPIN = () =>{
+        ApiService.sentOTP_ForgotMPIN(mobileNumber).then(data=>{
+        console.log('requesting otp to '+formData.agency_mobaile);
+        if (data.error == false) {
+            setCountdown(60);
+            setIsSent(true);
+            setOTP(data.user_otp)
+            } else {
+            Alert.alert('OTP Alert',`${data.message}`,[
+                {
+                text: 'OK',
+                onPress: () => {
+                    router.back();
+                },
+                },
+            ],
+            { cancelable: false })
+            }
+        }).catch(err=>{
+            console.error(JSON.stringify(err));
+        }).finally(()=>{
+            showLoading(false)
+        })
+    }
+
     useEffect(() => {
         showLoading(true);
         if (formData.user == 'Employer' || formData.user == 'Candidate') {
@@ -42,28 +92,12 @@ const VerifyOTP = () => {
                 showLoading(false)
             })
         } else {
-            SendOtpRequest(mobileNumber).then(data=>{
-            console.log('requesting otp to '+formData.agency_mobaile);
-            if (data.error == false) {
-                setCountdown(60);
-                setIsSent(true);
-                setOTP(data.user_otp)
-              } else {
-                Alert.alert('OTP Alert',`${data.message}`,[
-                    {
-                    text: 'OK',
-                    onPress: () => {
-                        router.back();
-                    },
-                    },
-                ],
-                { cancelable: false })
-              }
-            }).catch(err=>{
-                console.error(JSON.stringify(err));
-            }).finally(()=>{
-                showLoading(false)
-            })
+           if (formData.action == 'signup') {
+            sendOTPSignUp();
+           }
+           if (formData.action == 'MPINChange') {
+            sendOTPForgotMPIN();
+           }
         }
     }, []);
 
@@ -210,19 +244,19 @@ const VerifyOTP = () => {
     }
     
 
-    const wrongNo = ()=> {
-      router.back();
-    }
+    // const wrongNo = ()=> {
+    //   router.back();
+    // }
 
     return (
         <SafeAreaView style={globalStyles.container}>
             <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
             {/* Blue curved header */}
-            {formData.user == 'Employer' || formData.user == 'Candidate' ? (<>
+            {formData.user == 'Employer' || formData.user == 'Candidate' ? (
             <CurvedHeader subtitle={`Please enter OTP to Verify the ${formData.user}`}></CurvedHeader>
-            </>): (<>
-            <CurvedHeader subtitle='Please enter OTP to register.'></CurvedHeader>
-            </>)}
+            ): (
+            <CurvedHeader subtitle='OTP needed for verification.'></CurvedHeader>
+            )}
     
             {/* Verification code */}
             <View style={[globalStyles.verificationContainer, {marginTop : 100}]}>
@@ -267,11 +301,11 @@ const VerifyOTP = () => {
             </TouchableOpacity>
 
           {/* Sign in text */}
-          <View style={globalStyles.signUpContainer}>
+          {/* <View style={globalStyles.signUpContainer}>
             <TouchableOpacity onPress={wrongNo}>
               <Text style={globalStyles.noAccountText}>Entered a Wrong number?</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
         </SafeAreaView>
     );

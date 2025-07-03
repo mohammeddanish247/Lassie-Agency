@@ -57,7 +57,8 @@ const getBanners = 'banner_list.php'
 const RemainingContacts = 'canditate_seen_by_agency.php'
 const RemainingContacts2 = 'employer_seen_by_agency.php'
 const previous_package_book = 'previous_package_book.php'
-
+const sentOTP_ForgotMPIN = 'forget_mipn.php'
+const reset_MPIN = 'reset_mipn.php'
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -568,5 +569,22 @@ const api = axios.create({
       formData.append('type', 'Agency');
       const res = await api.post<any>(previous_package_book, formData)
       return res.data
+    },
+
+    sentOTP_ForgotMPIN : async (mobile: any) => {
+        const formData = new FormData();
+        formData.append('mobile_number', mobile);
+        formData.append('type', 'Agency');
+        const res = await api.post<any>(sentOTP_ForgotMPIN, formData)
+        return res.data
+    },
+
+     resetMPIN : async (mobile: any, mpin: string) => {
+        const formData = new FormData();
+        formData.append('mobile_number', mobile);
+        formData.append('type', 'Agency');
+        formData.append('mipn', mpin);
+        const res = await api.post<any>(reset_MPIN, formData)
+        return res.data
     }
 }

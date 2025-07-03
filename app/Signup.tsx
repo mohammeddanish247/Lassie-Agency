@@ -99,7 +99,8 @@ const SignUp = () => {
         state: state,
         country_name: country,
         country_code: '+91',
-        mipn: '0'
+        mipn: '0',
+        action: 'signup'
       }
     router.push({
       pathname: '/VerifyOTP',

@@ -50,6 +50,7 @@ const MPIN = () => {
     // Auto focus to confirm MPIN when 4 digits are entered
     if (newMpin.length === 4) {
       confirmMpinInputRef.current?.focus();
+      Keyboard.dismiss();
     }
   };
   
@@ -68,6 +69,22 @@ const MPIN = () => {
   // Toggle terms agreement
   const toggleAgreeToTerms = () => {
     setAgreeToTerms(!agreeToTerms);
+  };
+
+    // Toggle terms agreement
+  const forgotMPIN = () => {
+    if (isUserLoggedIn == 'true') {
+      let formData = {
+        agency_mobaile: mobile,
+        action: 'MPINChange'
+      }
+    router.push({
+      pathname: '/VerifyOTP',
+      params: {
+      unParsedData: JSON.stringify(formData), // must be string
+    },
+    });
+    }
   };
   
   // Handle submit
@@ -97,7 +114,29 @@ const MPIN = () => {
     if (isUserLoggedIn == 'true') {
       handleLogin(mobile, formData.mipn);
     } else {
-      handleAgenctRegistration();
+      if (formData.action == 'signup') {
+        handleAgenctRegistration();
+      }
+      if (formData.action == 'MPINChange') {
+          showLoading(true)
+          ApiService.resetMPIN(formData.agency_mobaile, formData.mipn)
+          .then((response)=>{
+            if (response.error == false) {
+              Alert.alert('Success', 'Success! Your MPIN has been set Successfully.');
+              router.dismissAll();
+            } else {
+              Alert.alert('MPIN Set Failed', response.message);
+            }
+            console.log('API Response:', response);
+          })
+          .catch((error)=>{
+            console.error('API Error:', error.message);
+            Alert.alert('Error', 'Failed to submit registration. Please try again.');
+          })
+          .finally(()=>{
+            showLoading(false)
+          })
+      }
     }
   };
 
@@ -127,17 +166,10 @@ const MPIN = () => {
       if (response.error == false) {
         Alert.alert('Success', 'Success! Your account is ready. Use your credentials to log in now.');
         router.replace('/')
-        // navigation.dispatch(
-        //   CommonActions.reset({
-        //     index: 0,
-        //     routes: [{ name: 'Login' }],
-        //   })
-        // );
       } else {
         Alert.alert('Registration Failed', response.message);
       }
       console.log('API Response:', response);
-      // You can navigate to another screen or reset form here
     })
     .catch((error)=>{
       console.error('API Error:', error.message);
@@ -168,7 +200,7 @@ const MPIN = () => {
         <StatusBar barStyle="light-content"  backgroundColor={colors.primary}/>
         
         {/* Blue curved header */}
-        <CurvedHeader subtitle={isUserLoggedIn == 'true' ? 'Please Enter MPIN' : 'Please Create MPIN'}></CurvedHeader>
+        <CurvedHeader subtitle={isUserLoggedIn == 'true' ? 'Log in with your MPIN.' : 'Please Create MPIN'}></CurvedHeader>
         
         {/* MPIN Form */}
         <View style={styles.formContainer}>
@@ -235,7 +267,20 @@ const MPIN = () => {
               </Text>
             </TouchableOpacity>
           )}
-          
+          {isUserLoggedIn == 'true' && (
+            <TouchableOpacity 
+              style={styles.termsContainer}
+              onPress={forgotMPIN}
+              activeOpacity={0.7}
+            >
+              <View style={{width:'100%', alignItems:'center', marginTop:20}}>
+                              <Text style={styles.termsText}>
+               Oops! Forgot your MPIN? 
+                <Text style={{color : colors.primary}}> Reset it now.</Text>
+              </Text>
+              </View>
+            </TouchableOpacity>
+          )}
           {/* Submit Button */}
           <TouchableOpacity 
             style={[styles.submitButton, (!agreeToTerms || mpin.length !== 4 || confirmMpin.length !== 4) ? styles.submitButtonDisabled : {}]}
