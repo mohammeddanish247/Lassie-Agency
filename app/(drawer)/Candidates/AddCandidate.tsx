@@ -2,7 +2,7 @@ import AttachmentAndVerification from "@/components/AttachmentAndVerification";
 import { checkbox } from "@/components/CheckboxList";
 import EducationalInfo from "@/components/EducationalInfo";
 import Experiences from "@/components/Experience";
-import { AddCandidateFormLists, AddressType, CandidateDocuments, Country, CountryCurrency, Ethnicity, Height, IDProofType, IFormData, JobTitles, JobTypes, Language, Religion, Skills, TypeOfVisa, Weight, salaryList } from "@/components/Interfaces";
+import { AddCandidateFormLists, AddressType, CandidateDocuments, CityList, Country, CountryCurrency, Ethnicity, Height, IDProofType, IFormData, JobTitles, JobTypes, Language, Religion, Skills, StateList, TypeOfVisa, Weight, salaryList } from "@/components/Interfaces";
 import JobDetails from "@/components/JobDetails";
 import { PersonalInfo } from "@/components/PersonalInfo";
 import { useLoader } from "@/services/LoaderContext";
@@ -28,6 +28,9 @@ export default function AddCandidate() {
         religionList:[],
         heightList:[],
         weightList:[],
+        yourCountryList:[],
+        stateList: [],
+        cityList : [],
         jobTitleList:[],
         jobTypeList:[],
         expectedSalaryList:[],
@@ -113,7 +116,8 @@ export default function AddCandidate() {
                     setLists(prevState => ({
                         ...prevState,       
                         countryList: conList,
-                        readyToWorkCountryList: conList
+                        readyToWorkCountryList: conList,
+                        yourCountryList:conList
                       }));
                 }
             })
@@ -209,6 +213,43 @@ export default function AddCandidate() {
             .catch((err)=>{
                 console.log('Weight List Error', err);      
             }),
+
+            ApiService.stateList()
+            .then((res)=>{
+              if (res.isSuccess=='true'){
+                  const stateList = res.result.map((state: StateList, index: number)=>({
+                    id : index,
+                    name :  state.job_posting_state,
+                    checked : false
+                  }));
+                  setLists(prevState => ({
+                    ...prevState,       
+                    stateList: stateList 
+                  }));
+               }
+              })
+              .catch((err)=>{
+                console.log('State List Error', err);      
+            }),
+
+          ApiService.cityList()
+          .then((res)=>{
+            if(res.isSuccess=='true'){
+              const cityList = res.result.map((city: CityList, index : number)=>({
+                id: index,
+                name: city.job_posting_city,
+                checked : false
+              }));
+                setLists(prevState => ({
+                  ...prevState,       
+                  cityList: cityList 
+                }));
+              }  
+            })
+              .catch((err)=>{
+              console.log('City List Error', err);      
+          }),
+
 
             // ApiService.languageList()
             // .then((res)=>{
