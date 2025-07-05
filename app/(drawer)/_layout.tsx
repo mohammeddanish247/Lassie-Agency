@@ -35,7 +35,7 @@ export default function DrawerLayout() {
       // })}
         >
     <Drawer.Screen name="(tabs)" options={{headerShown: false}}/>
-     <Drawer.Screen name="(jobs)"/>
+     {/* <Drawer.Screen name="(jobs)"/> */}
     <Drawer.Screen name="Candidates"/>
     <Drawer.Screen name="Agreements"/>
     <Drawer.Screen name="ClientsOrder"/>

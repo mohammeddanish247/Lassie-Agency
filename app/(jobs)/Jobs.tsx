@@ -63,8 +63,7 @@ const JobScreen = () => {
         setShowFilter('false');
         const renamedData : any = { job_posting_for:  profileName};
         refreshJobList(renamedData);
-        setFilterData('');
-        // setFilterData(renamedData);
+        setFilterData(renamedData);
       } else {
         fetchJobs();
       }
@@ -174,6 +173,8 @@ const JobScreen = () => {
           setJobList(data.result)
           setHasMore(true);
           setPage(2);
+          console.log(data.result);
+          
           // setFilterData('');
         } else {
           console.log(data.message);

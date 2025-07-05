@@ -72,7 +72,7 @@ export default function Home({navigation} : {navigation : any}) {
   const handleMaidPress = (profile: any) =>{
     console.log(profile);
    router.push({
-         pathname: '/(drawer)/(jobs)/Jobs',
+         pathname: '/(jobs)/Jobs',
          params: { showFilterTab: 'false', profileName: profile.category_name },
        });
   }
@@ -94,14 +94,14 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
   
   const gotoJobListScreen = ()=>{
     router.push({
-      pathname: '/(drawer)/(jobs)/Jobs',
+      pathname: '/(jobs)/Jobs',
       // params: { unParsedData: JSON.stringify(JobList) },
     });
   }
 
   const GotoViewDetails = useCallback((jobid: string) => {
     router.push({
-      pathname: '/(drawer)/(jobs)/EmpDetails',
+      pathname: '/(jobs)/EmpDetails',
       params: { job_id: jobid },
     });
   }, []);
