@@ -45,16 +45,14 @@ const JobCard: React.FC<JobCardProps> = ({job, onViewDetails,
       </View>
       
       <Text style={styles.jobCategory}>{job.job_category} • {job.job_type}</Text>
+      <Text style={styles.jobCategory}>{job.job_posting_city}, {job.job_posting_state}, {job.job_posting_country}</Text>
       
       <View style={styles.jobDetailsContainer}>
-        <View style={styles.jobDetailTag}>
+        {/* <View style={styles.jobDetailTag}>
           <Text style={styles.jobDetailText}>{job.experience}</Text>
-        </View>
+        </View> */}
         <View style={styles.jobDetailTag}>
           <Text style={styles.jobDetailText}>Family Member: {job.job_posting_number_of_members}</Text>
-        </View>
-        <View style={styles.jobDetailTag}>
-          <Text style={styles.jobDetailText}>{job.job_posting_city}</Text>
         </View>
         <View style={styles.jobDetailTag}>
           <Text style={styles.jobDetailText}>{job.job_posting_salary}/Mo</Text>

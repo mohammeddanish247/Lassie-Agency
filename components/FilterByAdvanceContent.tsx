@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { getGlobalStyles } from '../styles/globalStyles';
-import { RadioGroup, RadioOption } from './RadioButton';
-import { AccordionItem } from './CollapsibleAccordion';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ApiService } from '../services/userServices';
-import { JobTitles, JobTypes, Skills } from './Interfaces';
+import { getGlobalStyles } from '../styles/globalStyles';
 import { checkbox, CheckboxList } from './CheckboxList';
+import { AccordionItem } from './CollapsibleAccordion';
+import { JobTitles, JobTypes, Skills } from './Interfaces';
+import { RadioGroup, RadioOption } from './RadioButton';
 
 
 interface JobFilterContentProps {
     onValueChange?: (dataForFilter: any[]) => void;
+    isCandidate?: boolean
 }
   
-export const FilterByAdvanceContent: React.FC<JobFilterContentProps> = ({onValueChange}) => {
+export const FilterByAdvanceContent: React.FC<JobFilterContentProps> = ({onValueChange, isCandidate = true}) => {
   const [regType, setRegType] = React.useState('All');
   const [jobTitles, setJobTitles] = useState<checkbox[]>([]);
   const [jobType, setJobType] = useState<checkbox[]>([]);
@@ -83,9 +84,11 @@ export const FilterByAdvanceContent: React.FC<JobFilterContentProps> = ({onValue
   };
 
   const searchClicked = () => {
-    let filterData : any = {
-      registration_type : regType,
+     let filterData : any = {} 
+    if (isCandidate) {
+      filterData.registration_type = regType
     }
+
     let selectedJobTitle = jobTitles.filter(a=>a.checked == true);
     let selectedJobType = jobType.filter(a=>a.checked == true);
     let slectedSkill = Skills.filter(a=>a.checked == true);
@@ -104,12 +107,12 @@ export const FilterByAdvanceContent: React.FC<JobFilterContentProps> = ({onValue
 
   return (
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-      <RadioGroup
+      {isCandidate && (      <RadioGroup
         title="Candidate Registration Type"
         options={CandRegType}
         selectedValue={regType}
         onValueChange={setRegType}
-      />
+      />)}
       <View style={{marginTop: 20}}></View>
       <AccordionItem title='Job Title'
       children = {

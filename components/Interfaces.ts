@@ -110,6 +110,16 @@ export interface Country {
   country_code: string ;
 }
 
+export interface StateList {
+  job_posting_state_id: string;
+  job_posting_state: string;
+}
+
+export interface CityList{
+  job_posting_city_id: string
+  job_posting_city: string
+}
+
 export interface Religion {
   religions_name: string;
   religions_id: string;

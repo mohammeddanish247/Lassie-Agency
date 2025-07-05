@@ -59,6 +59,8 @@ const RemainingContacts2 = 'employer_seen_by_agency.php'
 const previous_package_book = 'previous_package_book.php'
 const sentOTP_ForgotMPIN = 'forget_mipn.php'
 const reset_MPIN = 'reset_mipn.php'
+const stateList = 'state_list.php'
+const cityList = 'city_list.php' 
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -109,6 +111,16 @@ const api = axios.create({
 
     countryListCode: async() => {
       const res = await api.post<any>(country_list_code)
+      return res.data
+    },
+
+    stateList: async()=>{
+      const res = await api.post<any>(stateList)
+      return res.data
+    },
+
+    cityList: async ()=>{
+      const res = await api.post<any>(cityList)
       return res.data
     },
     
@@ -181,7 +193,7 @@ const api = axios.create({
       const formData = new FormData();
       formData.append('page', page.toString()); 
       formData.append('no_of_data', '10');
-       if(dataForFilter){
+      if(dataForFilter){
         console.log("dataForFilter "+JSON.stringify(dataForFilter));
         Object.entries(dataForFilter).forEach(([key, value]) => {
           if (value !== undefined && value !== null && value !== '') {

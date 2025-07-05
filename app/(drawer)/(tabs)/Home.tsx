@@ -68,9 +68,18 @@ export default function Home({navigation} : {navigation : any}) {
       });
   },[])
 
+
+  const handleMaidPress = (profile: any) =>{
+    console.log(profile);
+   router.push({
+         pathname: '/(drawer)/(jobs)/Jobs',
+         params: { showFilterTab: 'false', profileName: profile.category_name },
+       });
+  }
+
   
 const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
-    <TouchableOpacity style={[styles.profileItem, globalStyles.card]} key={profile.category_id}>
+    <TouchableOpacity style={[styles.profileItem, globalStyles.card]} key={profile.category_id} onPress={()=>handleMaidPress(profile)}>
       <View style={styles.profileIconContainer}>
         <Ionicons name='person' size={24} color={'#fff'} style={{alignItems:'center'}}></Ionicons>
         {/* <Text style={styles.profileIcon}>{profile.category_icon}</Text> */}

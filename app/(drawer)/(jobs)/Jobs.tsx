@@ -1,25 +1,41 @@
+import { FilterByAdvanceContent } from '@/components/FilterByAdvanceContent';
 import { FilterByJobContent } from '@/components/FilterByJobContent';
-import { Category } from '@/components/FilterTabsHorizontal';
+import { FilterByJobTypeContent } from '@/components/FilterByJobTypeContent';
+import { FilterByLocationContent } from '@/components/FilterByLocationContent';
+import { FilterBySkillContent } from '@/components/FilterBySkillContent';
+import FilterTabsHorizontal, { Category } from '@/components/FilterTabsHorizontal';
 import { JobListing } from '@/components/Interfaces';
 import JobCard from '@/components/JobCard';
+import BottomSheet from '@/components/PopupModal';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import LottieView from 'lottie-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, StatusBar, StyleSheet, useColorScheme } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const JobScreen = () => {
+  const [showFilter , setShowFilter] = useState('true');
+  const { showFilterTab, profileName } : { showFilterTab : string, profileName: string } = useLocalSearchParams();
   const colorScheme = useColorScheme();
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
   const colors = Colors[colorScheme ?? 'light'];
   const [JobList, setJobList] = useState<JobListing[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState<{title: string; content: React.ReactNode;}>({ title: '', content: null });
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterData] = useState('');
 
+  const categories = [
+    { id: '1', name: 'Looking For'},
+    { id: '2', name: 'Job Type'},
+    // { id: '3', name: 'Skills'},
+    { id: '4', name: 'Advance Filter'},
+    { id: '5', name: 'Location'},
+  ];
 
   const fetchJobs = async() => {
     if (loading || !hasMore) return;
@@ -43,30 +59,96 @@ const JobScreen = () => {
   };
   
   useEffect(()=>{
-     fetchJobs();
+     if (showFilterTab === 'false') {
+        setShowFilter('false');
+        const renamedData : any = { job_posting_for:  profileName};
+        refreshJobList(renamedData);
+        setFilterData('');
+        // setFilterData(renamedData);
+      } else {
+        fetchJobs();
+      }
   },[])
 
-  const [modalContent, setModalContent] = useState<{
-    title: string;
-    content: React.ReactNode;
-  }>({ title: '', content: null });
+   const FilterByJobValueChange = (data : any) => {
+    if (Object.keys(data).length > 0) {
+      const renamedData : any = { job_posting_for: data.job_title };
+      refreshJobList(renamedData);
+      setFilterData(renamedData);
+    }
+  };
+
+  const FilterByJobTypeValueChange = (data: any) => {
+    if (Object.keys(data).length > 0) {
+      const renamedData : any = { job_posting_job_type: data.job_type };
+      refreshJobList(renamedData);
+      setFilterData(renamedData);
+    }
+  }
+
+  const FilterBySkillValueChange = (data : any) => {
+    if (Object.keys(data).length > 0) {
+      refreshJobList(data);
+      setFilterData(data);
+    }
+  };
+
+  const FilterByAdvanceValueChange = (data : any) => {
+    console.log(data);
+    
+    if (Object.keys(data).length > 0) {
+       const renamedData : any = {}
+       renamedData.job_posting_for =  data.job_title
+       renamedData.job_posting_job_type = data.job_type
+       renamedData.job_posting_skill = data.jobseeker_skills
+      refreshJobList(renamedData);
+      setFilterData(renamedData);
+    }
+  };
+
+  const handleSelectedLocation = (filterData : any) =>{
+    if (Object.keys(filterData).length > 0) {
+       const renamedData : any = Object.entries(filterData).reduce((acc, [key, value]) => {
+          acc[`job_posting_${key}`] = value;
+          return acc;
+        }, {} as Record<string, any>);
+      refreshJobList(renamedData);
+      setFilterData(renamedData);
+    }
+  }
 
   const handleCategoryPress = (category: Category) => {
-    // Determine which content to show based on the category
     switch (category.id) {
       case '1':
         setModalContent({
-          title: 'Filter By Job',
-          content: <FilterByJobContent/>,
+          title: 'Looking For',
+          content: <FilterByJobContent onValueChange={FilterByJobValueChange}/>,
         });
         break;
-      // case 'filter2':
-      //   setModalContent({
-      //     title: 'Filter By Status',
-      //     content: <StatusFilterContent />,
-      //   });
-      //   break;
-      // Add more cases as needed
+      case '2':
+        setModalContent({
+          title: 'Filter By Job Type',
+          content: <FilterByJobTypeContent onValueChange={FilterByJobTypeValueChange}/>,
+        });
+        break;
+      case '3':
+        setModalContent({
+          title: 'Filter By Skills',
+          content: <FilterBySkillContent onValueChange={FilterBySkillValueChange} />,
+        });
+        break;
+      case '4':
+        setModalContent({
+          title: 'Advance Filter',
+           content: <FilterByAdvanceContent onValueChange={FilterByAdvanceValueChange} isCandidate={false}/>,
+        });
+        break;
+      case '5':
+        setModalContent({
+          title: 'Filter By Location',
+           content: <FilterByLocationContent onValueChange={(x)=> handleSelectedLocation(x)}/>,
+        });
+        break;
       default:
         setModalContent({
           title: 'Filter',
@@ -107,9 +189,27 @@ const JobScreen = () => {
       <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
         {/* <View style={globalStyles.sectionContainer}> */}
-          {/* <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal> */}
+          <View style={{marginTop: 20}}>
+            { showFilter == 'true' && (
+              <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
+            )}
+          </View>
+          <BottomSheet 
+          visible={modalVisible} 
+          onClose={()=>  setModalVisible(false)}
+          title={modalContent.title}>{modalContent.content}</BottomSheet>
 
-           <FlatList
+        { !loading && JobList.length == 0 ? (
+          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <LottieView
+            style={{width: 200, height: 200, backgroundColor: colors.background}}
+            autoPlay loop = {false}
+            source={require('@/assets/animations/no-record-found.json')}
+          />
+          <Text style={{fontSize: 16, color: 'gray'}}>No Records Found</Text>
+        </View>
+        ) : (
+          <FlatList
             data={JobList}
             renderItem={({ item }) =>  <JobCard job={item} onViewDetails={()=> GotoViewDetails(item.job_id)}/> }
             keyExtractor={(item, index) => index.toString()}
@@ -126,7 +226,7 @@ const JobScreen = () => {
             onEndReached={fetchJobs}
             onEndReachedThreshold={0.5}
           />
-
+        )}
           {/* </View> */}
       </SafeAreaView>
   )
