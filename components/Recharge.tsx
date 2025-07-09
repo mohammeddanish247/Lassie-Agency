@@ -111,6 +111,10 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
       .catch(err => console.error('Failed to open dialer:', err));
   };
 
+  const ViewFullCV = () => {
+    
+  };
+
   const upgrade = () => {
     closeModal();
     router.navigate('/(drawer)/Packages');
@@ -221,9 +225,15 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
               </View>
 
             </View>
-                            <View style={styles.bottomContainer}>
+              <View >
                 <TouchableOpacity style={styles.rechargeButton} onPress={Callme}>
                 <Text style={styles.rechargeButtonText}>Call Candidate</Text>
+                </TouchableOpacity>
+              </View>
+
+               <View style={styles.bottomContainer}>
+                <TouchableOpacity style={styles.rechargeButton} onPress={ViewFullCV}>
+                <Text style={styles.rechargeButtonText}>Download Full CV</Text>
                 </TouchableOpacity>
               </View>
               
@@ -388,13 +398,15 @@ const styles = StyleSheet.create({
     color: '#999999',
   },
   bottomContainer: {
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     paddingVertical: 16,
     paddingBottom: 52,
     borderBottomWidth: 2,
     borderBottomColor: '#F0F0F0',
   },
   rechargeButton: {
+    marginHorizontal: 20,
+    marginTop: 10,
     backgroundColor: '#5B94E2',
     borderRadius: 12,
     paddingVertical: 16,

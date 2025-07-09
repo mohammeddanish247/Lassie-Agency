@@ -4,6 +4,7 @@ import { FilterByJobTypeContent } from '@/components/FilterByJobTypeContent';
 import { FilterByLocationContent } from '@/components/FilterByLocationContent';
 import { FilterBySkillContent } from '@/components/FilterBySkillContent';
 import FilterTabsHorizontal, { Category } from '@/components/FilterTabsHorizontal';
+import AnimatedInput from '@/components/InputExpandable';
 import { JobListing } from '@/components/Interfaces';
 import JobCard from '@/components/JobCard';
 import BottomSheet from '@/components/PopupModal';
@@ -186,13 +187,30 @@ const JobScreen = () => {
       })
   }
 
+  const handleSearch = (searchKey: string) =>{
+    console.log(searchKey);
+    const DataforFilter : any = {}
+    DataforFilter.search_key = searchKey;
+    refreshJobList(DataforFilter);
+     setFilterData(DataforFilter);
+  }
+
+  const colorss = {
+    primary: '#5B94E2',
+    white: '#FFFFFF',
+    secondary: '#FF0000'
+  };
+
   return (
       <SafeAreaView style={globalStyles.container}>
       <StatusBar barStyle="light-content" backgroundColor={'#5B94E2'} />
         {/* <View style={globalStyles.sectionContainer}> */}
-          <View style={{marginTop: 20}}>
+          <View style={{flexDirection:'row', margin: 15, }}>
             { showFilter == 'true' && (
-              <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
+              <>
+              <AnimatedInput colors={colorss} onSearch={handleSearch}></AnimatedInput>
+              <FilterTabsHorizontal categories={categories} showFilterButton={false} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
+              </>
             )}
           </View>
           <BottomSheet 
@@ -236,5 +254,30 @@ const JobScreen = () => {
 export default JobScreen
 
 const styles = StyleSheet.create({
-    
+    searchContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+  },
+  searchInputContainer: {
+    flex: 1,
+    height: 46,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+  },
+  searchInput: {
+    fontSize: 15,
+  },
+  searchButton: {
+    width: 46,
+    height: 46,
+    backgroundColor: '#4a90e2',
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

@@ -170,8 +170,11 @@ export default function CandidateProfile() {
         if(userData){
            ApiService.getCV(params.id, userData.user_id).then(res=>{
             if (res.isSuccess == "true") {
+              console.log(res.result[0]);
               setCV(res.result[0]);
             }
+           }).catch(err=>{
+            console.log(err);
            })
         } else {
           Alert.alert('Data Not Available','User data context not Available')

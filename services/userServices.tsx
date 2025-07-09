@@ -206,11 +206,13 @@ const api = axios.create({
         return res.data
     },
 
-    getCandidateList: async (id: string, page : number, dataForFilter?: any , isWishlist: boolean = false): Promise<any> => {
+    getCandidateList: async (route:string, id: string, page : number, dataForFilter?: any , isWishlist: boolean = false): Promise<any> => {
       const formData = new FormData();
       formData.append('page', page.toString()); 
       formData.append('no_of_data', '10');
-      formData.append('agency_id', id); 
+      if (route == 'drawer') {
+        formData.append('agency_id', id); 
+      }
       if(dataForFilter){
         console.log("dataForFilter "+JSON.stringify(dataForFilter));
         Object.entries(dataForFilter).forEach(([key, value]) => {

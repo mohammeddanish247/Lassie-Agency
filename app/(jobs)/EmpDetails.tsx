@@ -30,7 +30,7 @@ export default function EmployeeDetailsScreen() {
             setEmpDetails(res.result[0]);
         }
       } catch (error) {
-        console.error("Error fetching agreement details:", error);
+        console.error("Error details:", error);
       } finally {
         setLoading(false);
       }
@@ -74,7 +74,7 @@ export default function EmployeeDetailsScreen() {
       <SafeAreaView style={styles.loadingContainer}>
         <StatusBar barStyle="light-content" />
         <ActivityIndicator size="large" color="#4A90E2" />
-        <Text style={styles.loadingText}>Loading agreement details...</Text>
+        <Text style={styles.loadingText}>Loading Details...</Text>
       </SafeAreaView>
     );
   }

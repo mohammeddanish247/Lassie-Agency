@@ -302,8 +302,11 @@ export default function DeliveryNoteScreen() {
             <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 30}}>Others Details</Text>
           </View>
 
-          <InputField lable="Monthly Salary" placeholder="Monthly Salary" onChangeValue={(value) => setFormData(prev => ({ ...prev, esalary:  value}))} 
-          value={formData.esalary} hasModal={true} icon="cash-outline" itemClicked={() => openModalAccordingly('OpenSalary')} />
+          <InputField value={formData.esalary} lable="Monthly Salary" placeholder="Enter Monthly Salary" 
+          onChangeValue={(value) => setFormData(prev => ({ ...prev, esalary:  value}))} keyboardType="number-pad"/>
+
+          {/* <InputField lable="Monthly Salary" placeholder="Monthly Salary" onChangeValue={(value) => setFormData(prev => ({ ...prev, esalary:  value}))} 
+          value={formData.esalary} hasModal={true} icon="cash-outline" itemClicked={() => openModalAccordingly('OpenSalary')} /> */}
 
           <InputField 
             lable="Joining Data" 

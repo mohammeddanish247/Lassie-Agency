@@ -72,7 +72,7 @@ export default function Home({navigation} : {navigation : any}) {
   const handleMaidPress = (profile: any) =>{
     console.log(profile);
    router.push({
-         pathname: '/(jobs)/Jobs',
+         pathname: '/(candidate)',
          params: { showFilterTab: 'false', profileName: profile.category_name },
        });
   }
@@ -86,7 +86,7 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
       </View>
       <View style={styles.profileInfo}>
         <Text style={styles.profileTitle}>{profile.category_name}</Text>
-        <Text style={styles.profileJobs}>{profile.no_of_profile} jobs available</Text>
+        <Text style={styles.profileJobs}>{profile.no_of_profile} profiles available</Text>
       </View>
       <Text style={styles.profileArrow}>→</Text>
     </TouchableOpacity>

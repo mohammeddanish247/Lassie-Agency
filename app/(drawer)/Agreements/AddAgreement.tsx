@@ -1,3 +1,4 @@
+import { RadioGroup, RadioOption } from "@/components/RadioButton";
 import { Colors } from "@/constants/Colors";
 import { UserContext } from "@/services/userContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,13 +35,17 @@ export default function AddAgreementScreen() {
   });
   const [ReplacementList, setReplacementList] = useState<checkbox[]>([]);
   const [HoursList, setHoursList] = useState<checkbox[]>([]);
-  const [foodList, setfoodList] = useState<checkbox[]>([]);
+  // const [foodList, setfoodList] = useState<checkbox[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<{
     title: string;
     content: React.ReactNode;
   }>({ title: '', content: null });
   const [showDatePicker, setDatePicker] = useState(false); 
+  const YesNoOptions: RadioOption[] = [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ];
 
   const SearchButtonPress = () =>{
     if (!formData.form_id.trim()) {
@@ -71,12 +76,6 @@ export default function AddAgreementScreen() {
 
   const handleSelectedValue = (list : checkbox[], type: string)=>{
     switch (type) {
-        case 'food':
-          let jl =list.filter(item=>item.checked==true);
-          setFormData(prev => ({ ...prev, food: jl[0].name }));
-          setfoodList(list)
-          setModalVisible(false)
-        break;
          case 'working_hour':
           let wh =list.filter(item=>item.checked==true);
           setFormData(prev => ({ ...prev, working_hour: wh[0].name }));
@@ -96,16 +95,16 @@ export default function AddAgreementScreen() {
 
   const getAllDataFromAPI = () =>{
     return Promise.all([
-      ApiService.livingarrangements_list()
-        .then((res)=>{
-          if (res.isSuccess == 'true') {
-              const LivingType = res.result.map((j : any)=>({
-                  id : j.livingarrangements_id,
-                  name : j.livingarrangements_name,
-                  checked : false
-              }));
-              setfoodList(LivingType)
-        }}),
+      // ApiService.livingarrangements_list()
+      //   .then((res)=>{
+      //     if (res.isSuccess == 'true') {
+      //         const LivingType = res.result.map((j : any)=>({
+      //             id : j.livingarrangements_id,
+      //             name : j.livingarrangements_name,
+      //             checked : false
+      //         }));
+      //         setfoodList(LivingType)
+      //   }}),
         ApiService.get_job_type()
         .then((res)=>{
           if (res.isSuccess == 'true') {
@@ -135,9 +134,15 @@ export default function AddAgreementScreen() {
         case "food":
           setModalContent({
               title: 'Select Food Living Arrangements',
-              content: <CheckboxList data={foodList}
-              returnValue={(list)=>{handleSelectedValue(list, 'food')}}
-              ></CheckboxList>,
+              // content: <CheckboxList data={foodList}
+              // returnValue={(list)=>{handleSelectedValue(list, 'food')}}
+              // ></CheckboxList>,
+               content:  <RadioGroup options={YesNoOptions}
+                      title='Please Select' selectedValue={formData.food} onValueChange={(value) => {
+                        setFormData(prev => ({ ...prev, food:  value}))
+                        console.log(value);
+                        setModalVisible(false)
+                      }}></RadioGroup>,
           });
           setModalVisible(true);
         break;
@@ -302,7 +307,7 @@ export default function AddAgreementScreen() {
     onChangeValue={(value) => setFormData(prev => ({ ...prev, month_deduction:  value}))} keyboardType="number-pad"/>
 
 
-    <InputField value={formData.place} lable="Place" placeholder="Enter Place" 
+    <InputField value={formData.place} lable="Agency City Name" placeholder="Enter Agency City Name" 
     onChangeValue={(value) => setFormData(prev => ({ ...prev, place:  value}))}/>
 
     <TouchableOpacity style={[globalStyles.loginButton, {marginBottom: 28}]} onPress={SubmitClick}>

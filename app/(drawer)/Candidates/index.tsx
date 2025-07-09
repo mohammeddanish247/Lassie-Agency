@@ -4,6 +4,7 @@ import { FilterByJobContent } from '@/components/FilterByJobContent';
 import { FilterByLocationContent } from '@/components/FilterByLocationContent';
 import { FilterByOtherContent } from '@/components/FilterByOtherContent';
 import FilterTabsHorizontal, { Category } from '@/components/FilterTabsHorizontal';
+import AnimatedInput from '@/components/InputExpandable';
 import { ICandidate } from '@/components/Interfaces';
 import BottomSheet from '@/components/PopupModal';
 import RechargeScreen from '@/components/Recharge';
@@ -17,12 +18,27 @@ import LottieView from 'lottie-react-native';
 import { useContext, useEffect, useState } from 'react';
 import { FlatList, RefreshControl, SafeAreaView, StyleSheet, Text, ToastAndroid, TouchableOpacity, useColorScheme, View } from 'react-native';
 
-export default function  Candidates() {
+interface CandidatesProps {
+  showFab?: boolean;
+  addCandidateRoute?: string;
+  viewCVRoute?: string;
+  Route?: string
+  profileName?: string
+}
+
+export default function Candidates({ 
+  showFab = true, 
+  addCandidateRoute = '/Candidates/AddCandidate',
+  viewCVRoute = '/(drawer)/Candidates/ViewCV',
+  Route = 'drawer',
+  profileName = ''
+}: CandidatesProps) {
   const { userData } = useContext(UserContext);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const styles = getStyles(colorScheme ?? 'light');
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
+  
   const [candidates, setCandidates] = useState<ICandidate[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState<{
@@ -33,7 +49,6 @@ export default function  Candidates() {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterData] = useState('');
-
 
   const categories = [
     { id: '1', name: 'Job'},
@@ -49,12 +64,12 @@ export default function  Candidates() {
       setLoading(true);
       if (filterValue != '') {
         console.log('inside if '+filterValue);
-        response = await ApiService.getCandidateList(userData.user_id,page,filterValue)
+        response = await ApiService.getCandidateList(Route,userData.user_id,page,filterValue)
       } else {
         console.log('inside else '+filterValue);
-        response = await ApiService.getCandidateList(userData.user_id,page)
+        response = await ApiService.getCandidateList(Route,userData.user_id,page)
       }
-      // console.log(response);
+      
       if (response.isSuccess === 'true') {
         setCandidates((existingItems) => [...existingItems, ...response.result]);
         setPage((prePage) => prePage + 1);
@@ -66,7 +81,13 @@ export default function  Candidates() {
   };
 
   useEffect(() => {
-    loadCandidate();
+    if (Route === 'stack') {
+      const renamedData : any = { job_title:  profileName};
+      refreshCandidateList(renamedData);
+      setFilterData(renamedData);
+    } else {
+      loadCandidate();
+    }
   },[])
 
   const handleCategoryPress = (category: Category) => {
@@ -86,7 +107,7 @@ export default function  Candidates() {
       case '3':
         setModalContent({
           title: 'Filter By Location',
-          content: <FilterByLocationContent/>,
+          content: <FilterByLocationContent onValueChange={handleSelectedLocation}/>,
         });
         break;
       case '4':
@@ -95,7 +116,6 @@ export default function  Candidates() {
           content: <FilterByOtherContent FilerByOtherChange={FilterByOtherValueChange}/>,
         });
         break;
-      // Add more cases as needed
       default:
         setModalContent({
           title: 'Filter',
@@ -126,18 +146,28 @@ export default function  Candidates() {
     }
   };
 
+  const handleSelectedLocation = (filterData : any) =>{
+    if (Object.keys(filterData).length > 0) {
+      const renamedData : any = Object.entries(filterData).reduce((acc, [key, value]) => {
+        acc[`jobseeker_your${key}`] = value;
+        return acc;
+      }, {} as Record<string, any>);
+      refreshCandidateList(renamedData);
+      setFilterData(renamedData);
+    }
+  }
+
   const refreshCandidateList = (dataForFilter: any) => {
     if (userData) {
       setLoading(true)
       setModalVisible(false);
       setCandidates([]);
-      ApiService.getCandidateList(userData.user_id,1,dataForFilter).then(data => {
+      ApiService.getCandidateList(Route,userData.user_id,1,dataForFilter).then(data => {
         if (data.isSuccess == 'true') {
           let allCandidates : ICandidate[] = data.result;
           setCandidates(allCandidates)
           setHasMore(true);
           setPage(2);
-          // setFilterData('');
         } else {
           console.log(data.message);
         }
@@ -155,8 +185,7 @@ export default function  Candidates() {
 
   const AddCandidate = () =>{
     router.push({
-      pathname: '/Candidates/AddCandidate',
-      // params: { job_id: jobid },
+      pathname: addCandidateRoute as any,
     });
   }
 
@@ -175,7 +204,7 @@ export default function  Candidates() {
 
   const handleViewCV = (id: string) =>{
     router.push({
-      pathname: '/(drawer)/Candidates/ViewCV',
+      pathname: viewCVRoute as any,
       params: { id: id },
     });
   }
@@ -187,47 +216,78 @@ export default function  Candidates() {
     });
     setModalVisible(true)
   }
-  
+
+  const handleSearch = (searchKey: string) =>{
+    console.log(searchKey);
+    const DataforFilter : any = {}
+    DataforFilter.search_key = searchKey;
+    refreshCandidateList(DataforFilter);
+     setFilterData(DataforFilter);
+  }
+
+  const colorss = {
+    primary: '#5B94E2',
+    white: '#FFFFFF',
+    secondary: '#FF0000'
+  };
+
   return (
     <SafeAreaView style={globalStyles.container}>
-        <View style={{marginTop: 20}}>
-          <FilterTabsHorizontal categories={categories} showFilterButton={true} onCategoryPress={handleCategoryPress}/>
-        </View>
-        <BottomSheet 
-          visible={modalVisible} 
-          onClose={hidePopup}
-          title={modalContent.title}>{modalContent.content}</BottomSheet>
+      <View style={{flexDirection:'row', margin: 15, }}>
+          <AnimatedInput colors={colorss} onSearch={handleSearch}></AnimatedInput>
+          <FilterTabsHorizontal categories={categories} showFilterButton={false} onCategoryPress={handleCategoryPress}></FilterTabsHorizontal>
+      </View>
+
+      <BottomSheet 
+        visible={modalVisible} 
+        onClose={hidePopup}
+        title={modalContent.title}
+      >
+        {modalContent.content}
+      </BottomSheet>
+
+      {showFab && (
         <TouchableOpacity style={styles.fab} onPress={AddCandidate}>
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
-        { !loading && candidates.length == 0 ? (
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      )}
+
+      { !loading && candidates.length == 0 ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <LottieView
             style={{width: 200, height: 200, backgroundColor: colors.background}}
-            autoPlay loop = {false}
+            autoPlay 
+            loop = {false}
             source={require('@/assets/animations/no-record-found.json')}
           />
           <Text style={{fontSize: 16, color: 'gray'}}>No Records Found</Text>
         </View>
-        ) : (
-          <FlatList
-            data={candidates}
-            renderItem={({ item }) => <CandidateCard candidate={item} AddWishlist={CallAddWishList} ViewCVClicked={handleViewCV} ContactClicked={handleContact}/>}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.listContainer}
-            refreshControl={
-              <RefreshControl
-                refreshing={loading}
-                onRefresh={()=>refreshCandidateList('')}
-                colors={['#0066CC']}
-                tintColor="#0066CC"
-              />
-            }
-            showsVerticalScrollIndicator={false}
-            onEndReached={loadCandidate}
-            onEndReachedThreshold={0.5}
-          />
-        )}
+      ) : (
+        <FlatList
+          data={candidates}
+          renderItem={({ item }) => 
+            <CandidateCard 
+              candidate={item} 
+              AddWishlist={CallAddWishList} 
+              ViewCVClicked={handleViewCV} 
+              ContactClicked={handleContact}
+            />
+          }
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.listContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={()=>refreshCandidateList('')}
+              colors={['#0066CC']}
+              tintColor="#0066CC"
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          onEndReached={loadCandidate}
+          onEndReachedThreshold={0.5}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -237,7 +297,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
   return StyleSheet.create({
     listContainer: {
       padding: 15,
-      paddingBottom: 80, // Extra space at bottom to account for 
+      paddingBottom: 80,
     },
     fab: {
       position: 'absolute',
@@ -249,8 +309,8 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
       borderRadius: 28,
       alignItems: 'center',
       justifyContent: 'center',
-      elevation: 4, // for Android shadow
-      shadowColor: '#000', // for iOS shadow
+      elevation: 4,
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.25,
       shadowRadius: 3.84,

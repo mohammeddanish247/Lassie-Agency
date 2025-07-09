@@ -1,8 +1,7 @@
-import React from 'react';
-import { View, TouchableOpacity, FlatList, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, useColorScheme, View } from 'react-native';
 
 export interface Category {
   id: string;
@@ -71,7 +70,7 @@ export const getStyles = (colorScheme: 'light' | 'dark') => {
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: 10,
-          marginLeft: 0
+          marginRight: 40
         },
         categoryButton: {
           alignItems: 'center',
