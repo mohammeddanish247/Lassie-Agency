@@ -11,8 +11,8 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  useColorScheme,
   View,
+  useColorScheme,
 } from 'react-native';
 import CurvedHeader from '../components/curvedHeader';
 import { useLoader } from '../services/LoaderContext';
@@ -89,6 +89,7 @@ const MPIN = () => {
   
   // Handle submit
   const handleSubmit = () => {
+    router.replace('/(drawer)/(tabs)/Home')
     // Validate inputs
     if (mpin.length !== 4) {
       Alert.alert('Please enter a 4-digit MPIN');

@@ -1,13 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { InputField } from './InputField'
-import { RadioGroup, RadioOption } from './RadioButton';
-import { CheckboxList, checkbox } from "./CheckboxList";
-import BottomSheet from './PopupModal';
-import { DatePicker } from './DatePicker';
-import { ApiService } from '../services/userServices';
-import { AddCandidateFormLists, Country, CountryCurrency, IFormData, JobTitles, JobTypes, salaryList, TypeOfVisa } from './Interfaces';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useLoader } from "../services/LoaderContext";
+import { checkbox, CheckboxList } from "./CheckboxList";
+import { InputField } from './InputField';
+import { AddCandidateFormLists, IFormData } from './Interfaces';
+import BottomSheet from './PopupModal';
+import { RadioGroup, RadioOption } from './RadioButton';
 
 interface JobDetailsProps {
     data: Partial<IFormData>;
@@ -20,6 +18,8 @@ interface JobDetailsProps {
 const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobDetailsProps) => {
     const { showLoading} = useLoader();
     const [modalVisible, setModalVisible] = useState(false);
+    const [salaryExpected, setSalaryExpected] = useState<string>('');
+    const [salaryTerm, setSalaryTerm] = useState<string>('');
 
 
     const [modalContent, setModalContent] = useState<{
@@ -30,6 +30,13 @@ const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobD
     const availableOrHiredList: RadioOption[] = [
         { label: 'Available', value: 'available' },
         { label: 'Hired', value: 'hired' },
+    ];
+
+      const salaryTermOption: RadioOption[] = [
+        { label: 'Per Hour', value: 'Per Hour' },
+        { label: 'Per Day', value: 'Per Day' },
+        { label: 'Per Week', value: 'Per Week' },
+        { label: 'Per Month', value: 'Per Month' },
     ];
 
 
@@ -131,7 +138,57 @@ const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobD
                 break;
         }    
     }
+
+     useEffect(() => {
+        // if (data.salary_expected) {
+        //     const [initialSalary, initialTerm] = data.salary_expected.split('-');
+        //     setSalaryExpected(initialSalary);
+        //     setSalaryTerm(initialTerm);
+        // }
+         if (salaryExpected && salaryTerm) {
+            const combined = `${salaryExpected}-${salaryTerm}`;
+            onChange('salary_expected', combined);
+        }
+    }, [salaryExpected, salaryTerm]);
     
+    const salaryExpectedForm=()=>{
+        return (
+          <>
+            <InputField
+              lable="Salary Expected"
+              placeholder="Enter Salary Expected"
+              onChangeValue={(value) => setSalaryExpected(value)}
+              // onChangeValue={(value) => onChange('jobseeker_ready_to_work_State', value)}
+              value={salaryExpected}
+              keyboardType="numeric"
+            />
+            <RadioGroup
+              style={styles.radioButton}
+              options={salaryTermOption}
+              title="Salary Term"
+              selectedValue={salaryTerm}
+              // onValueChange={(value) => onChange('jobseeker_available', value)}
+              onValueChange={(value) => setSalaryTerm(value)}
+            />
+            <InputField
+              lable="Select Currency"
+              placeholder="Select JobSeeker Currency"
+              onChangeValue={(value) => onChange("jobseeker_currency", value)}
+              value={data.jobseeker_currency}
+              hasModal={true}
+              icon="cash-outline"
+              itemClicked={() => openModalAccordingly("OpenCurrency")}
+            />
+          </>
+        );
+    }
+
+    const setMergeSalaryExpected = () =>{
+         if (salaryExpected && salaryTerm) {
+            const combined = `${salaryExpected}-${salaryTerm}`;
+            onChange('salary_expected', combined);
+        }
+    }
 
     
   return (
@@ -164,7 +221,7 @@ const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobD
                 selectedValue={data.jobseeker_available} 
                 onValueChange={(value) => onChange('jobseeker_available', value)}
             />
-            <InputField 
+            {/* <InputField 
                 lable="Salary Expected" 
                 placeholder="Select Salary Expected" 
                 onChangeValue={(value) => onChange('salary_expected', value)}
@@ -172,6 +229,21 @@ const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobD
                 hasModal= {true}
                 icon="wallet-outline" 
                 itemClicked={() => openModalAccordingly('SalaryExpected')} // Changed prop name to onIconPress
+            /> */}
+            <InputField 
+                    lable="Salary Expected" 
+                    placeholder="Enter Salary Expected" 
+                    onChangeValue={(value) => [setSalaryExpected(value), setMergeSalaryExpected()]} 
+                    // onChangeValue={(value) => onChange('jobseeker_ready_to_work_State', value)} 
+                    value={salaryExpected}
+                    keyboardType='numeric'
+            />
+             <RadioGroup style={styles.radioButton}
+                options={salaryTermOption}
+                title='Salary Term' 
+                selectedValue={salaryTerm} 
+                // onValueChange={(value) => onChange('jobseeker_available', value)}
+                onValueChange={(value) => [setSalaryTerm(value),setMergeSalaryExpected()]}
             />
             <InputField 
                 lable="Select Currency" 

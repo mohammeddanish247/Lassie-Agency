@@ -198,11 +198,14 @@ export interface Skills {
 
 export interface AddCandidateFormLists{
   countryList: checkbox[];
+  yourCountryList: checkbox[];
   ethnicityList: checkbox[];
   maritalStatus: RadioOption[];
   religionList: checkbox[];
   heightList: checkbox[];
   weightList: checkbox[];
+  stateList: checkbox[];
+  cityList : checkbox[];
   jobTitleList: checkbox[];
   jobTypeList: checkbox[];
   expectedSalaryList: checkbox[];

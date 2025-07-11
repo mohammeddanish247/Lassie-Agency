@@ -81,6 +81,24 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 onCheckBoxListChange('weightList', list)
                 setModalVisible(false)
                 break;
+            case 'OpenYourCountry':
+                let yc =list.filter(item=>item.checked==true);
+                onChange('jobseeker_yourcountry', yc[0].name);
+                onCheckBoxListChange('yourCountryList', list)
+                setModalVisible(false)
+                break;      
+            case 'state':
+                let s =list.filter(item=>item.checked==true);
+                onChange('jobseeker_yourstate', s[0].name);
+                onCheckBoxListChange('stateList', list)
+                setModalVisible(false)
+                break;
+            case 'city':
+                let city =list.filter(item=>item.checked==true);
+                onChange('jobseeker_yourcity', city[0].name);
+                onCheckBoxListChange('cityList', list)
+                setModalVisible(false)
+                break;     
             case 'language':
                 let l =list.filter(item=>item.checked==true);
                 // setLanguage(l[0].name);
@@ -97,13 +115,20 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
         switch (modalToOpen) {
             case 'OpenCountry':
                 setModalContent({
-                    title: 'Select your country',
+                    title: 'Select your Nationality',
                     content: <CheckboxList data={checkBoxList.countryList}
                     returnValue={(list)=>{handleSelectedValue(list, 'country')}}
                     ></CheckboxList>,
                 });
-                
-                break;   
+                break; 
+            case 'OpenYourCountry':
+                setModalContent({
+                    title: 'Select Country',
+                    content: <CheckboxList data={checkBoxList.yourCountryList}
+                    returnValue={(list)=>{handleSelectedValue(list, 'OpenYourCountry')}}
+                    ></CheckboxList>,
+                });
+                break;       
             case "OpenEthnicity":
                 setModalContent({
                     title: 'Select your Ethnicity',
@@ -144,6 +169,22 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                     ></CheckboxList>,
                 });         
                 break; 
+            case "OpenStateList":
+                setModalContent({
+                    title: 'Select your State',
+                    content: <CheckboxList data={checkBoxList.stateList}
+                    returnValue={(id)=>{handleSelectedValue(id, 'state')}}
+                    ></CheckboxList>,
+                });         
+                break;
+            case "OpenCityList":
+                setModalContent({
+                    title: 'Select your City',
+                    content: <CheckboxList data={checkBoxList.cityList}
+                    returnValue={(id)=>{handleSelectedValue(id, 'city')}}
+                    ></CheckboxList>,
+                });         
+                break;      
             default:
                 break;
         }
@@ -183,8 +224,7 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 keyboardType="numeric"
                 value={data.mobile_number}
                 maxLength={10}
-            />
-            
+            />           
             <RadioGroup style={styles.radioButton}
                 options={genderOptions}
                 title='Gender' 
@@ -197,7 +237,6 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 selectedValue={data.marital_status} 
                 onValueChange={(value) => onChange('marital_status', value)} 
             />
-
             <InputField 
                 lable="Date of Birth" 
                 placeholder="Enter Date of Birth" 
@@ -207,7 +246,6 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 icon="calendar-outline" 
                 itemClicked={() => setDatePicker(true)} // Changed prop name to onIconPress
             />
-
             <InputField 
                 lable={"Age"} 
                 placeholder={"Enter Age"} 
@@ -266,24 +304,51 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 icon="scale-outline" 
                 itemClicked={() => openModalAccordingly('OpenWeightList')} // Changed prop name to onIconPress
             />
+             <InputField 
+                lable="Your Country" 
+                placeholder="Select Your Country" 
+                onChangeValue={(value) => onChange('jobseeker_yourcountry', value)} 
+                value={data.jobseeker_yourcountry}
+                hasModal= {true}
+                icon="earth-outline" 
+                itemClicked={() => openModalAccordingly('OpenYourCountry')} // Changed prop name to onIconPress
+            />
             <InputField 
+                lable="Your State" 
+                placeholder="Select Your State" 
+                onChangeValue={(value) => onChange('jobseeker_yourstate', value)} 
+                value={data.jobseeker_yourstate}
+                hasModal= {true}
+                icon="map-outline" 
+                itemClicked={() => openModalAccordingly('OpenStateList')} // Changed prop name to onIconPress
+            />
+            <InputField 
+                lable="Your City" 
+                placeholder="Select Your City" 
+                onChangeValue={(value) => onChange('jobseeker_yourcity', value)} 
+                value={data.jobseeker_yourcity}
+                hasModal= {true}
+                icon="location-outline" 
+                itemClicked={() => openModalAccordingly('OpenCityList')} // Changed prop name to onIconPress
+            />
+            {/* <InputField 
                 lable="Your Country" 
                 placeholder="Enter Your Country" 
                 onChangeValue={(value) => onChange('jobseeker_yourcountry', value)} 
                 value={data.jobseeker_yourcountry}
-            />
-            <InputField 
+            /> */}
+            {/* <InputField 
                 lable="Your State" 
                 placeholder="Enter Your Sate" 
                 onChangeValue={(value) => onChange('jobseeker_yourstate', value)} 
                 value={data.jobseeker_yourstate}
-            />
-            <InputField 
+            /> */}
+            {/* <InputField 
                 lable="Your City" 
                 placeholder="Enter Your City" 
                 onChangeValue={(value) => onChange('jobseeker_yourcity', value)} 
                 value={data.jobseeker_yourcity}
-            />
+            /> */}
             {/* <InputField 
                 lable="Language" 
                 placeholder="Select Your Language" 
