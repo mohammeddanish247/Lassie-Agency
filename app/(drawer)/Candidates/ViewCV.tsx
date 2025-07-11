@@ -6,7 +6,7 @@ import { FontAwesome5, FontAwesome6, Ionicons, MaterialIcons } from "@expo/vecto
 import { useLocalSearchParams } from "expo-router";
 import type React from "react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface CandidateData {
   registration_type: string
@@ -165,16 +165,20 @@ export default function CandidateProfile() {
       console.log(params.id);
       const { userData } = useContext(UserContext);
       const [ candidate, setCV ] = useState<any>();
+      const [isLoading, setisLoading] = useState(true);
       
       const getCVDetails = () => {
         if(userData){
            ApiService.getCV(params.id, userData.user_id).then(res=>{
             if (res.isSuccess == "true") {
               console.log(res.result[0]);
+              console.log("CV laided");
               setCV(res.result[0]);
             }
            }).catch(err=>{
             console.log(err);
+           }).finally(()=>{
+            setisLoading(false)
            })
         } else {
           Alert.alert('Data Not Available','User data context not Available')
@@ -192,6 +196,15 @@ export default function CandidateProfile() {
     } catch (error) {
       console.error("Error sharing PDF:", error)
     }
+  }
+
+  if(isLoading) {
+    return(
+      <SafeAreaView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4A90E2" />
+          <Text style={styles.loadingText}>Loading CV Details...</Text>
+      </SafeAreaView>
+    )
   }
 
   return (
@@ -498,5 +511,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#EBF2FA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4A90E2',
   },
 })
