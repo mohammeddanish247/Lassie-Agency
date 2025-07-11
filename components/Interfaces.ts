@@ -315,7 +315,7 @@ export interface IFormData { // 44
   type_of_visa: string;
   jobseeker_visa_expiry_date: string;
   jobseeker_visa_Available_from: string;
-  languages: string;
+  languages: any;
   jobseeker_pcc: string;
   jobseeker_verification_doc: string;
   jobseeker_doc_impre: string;

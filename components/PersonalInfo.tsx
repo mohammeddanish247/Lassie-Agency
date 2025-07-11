@@ -116,9 +116,11 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
             case 'OpenCountry':
                 setModalContent({
                     title: 'Select your Nationality',
-                    content: <CheckboxList data={checkBoxList.countryList}
+                    content: 
+                    <CheckboxList data={checkBoxList.countryList}
                     returnValue={(list)=>{handleSelectedValue(list, 'country')}}
-                    ></CheckboxList>,
+                    ></CheckboxList>
+                    ,
                 });
                 break; 
             case 'OpenYourCountry':

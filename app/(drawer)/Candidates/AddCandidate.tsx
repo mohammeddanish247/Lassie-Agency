@@ -877,7 +877,7 @@ const personalInfoValid = (): boolean => {
 
       <View style={styles.container}>
        {/* personal Information */}
-        {step === 1 && 
+        {step === 4 && 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <PersonalInfo data={formData} 
@@ -913,7 +913,7 @@ const personalInfoValid = (): boolean => {
         </KeyboardAvoidingView> 
         }
         {/* Education Info */}
-        {step === 4 && 
+        {step === 1 && 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                    <EducationalInfo data={formData} 

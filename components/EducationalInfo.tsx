@@ -1,16 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { RadioGroup, RadioOption } from './RadioButton'
-import {CheckboxList, checkbox } from './CheckboxList';
-import { InputField } from './InputField';
-import BottomSheet from './PopupModal';
-import RadioButton from './SimpleCheckBox';
-import { Chip } from './chip'
-import { MultiSelectCheckboxList, MultiCheckboxItem } from './Multiselectlist'
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useLoader } from '../services/LoaderContext';
-import { ApiService } from '../services/userServices';
-import { AddCandidateFormLists, AddressType, IDProofType, IFormData, Language, Skills, TypeOfVisa } from './Interfaces';
+import LanguageSelector from './AddMultiLang';
+import { CheckboxList, checkbox } from './CheckboxList';
+import { Chip } from './chip';
 import { DatePicker } from './DatePicker';
+import { InputField } from './InputField';
+import { AddCandidateFormLists, IFormData } from './Interfaces';
+import { MultiCheckboxItem, MultiSelectCheckboxList } from './Multiselectlist';
+import BottomSheet from './PopupModal';
+import { RadioGroup, RadioOption } from './RadioButton';
 
 
 interface EducationAndOtherProps {
@@ -21,12 +20,19 @@ interface EducationAndOtherProps {
   onCheckBoxListChange : (field: string , value: checkbox[])=>void
 }
 
+type FormattedLanguage = {
+  name: string;
+  read: boolean;
+  spoken: boolean;
+  written: boolean;
+};
+
 const EducationalInfo = ({ data, onChange, checkBoxList,  onCheckBoxListChange }: EducationAndOtherProps) => {
   const { showLoading, showSuccess} = useLoader();
   const [modalVisible, setModalVisible] = useState(false);
   const [showDatePicker, setDatePicker] = useState(false); 
   const [switchDatePIcker, setSwitchDatePIcker] = useState('');
-
+  const [formattedLanguages, setFormattedLanguages] = useState<FormattedLanguage[]>([]);
 
   const YesNoOption: RadioOption[] = [
     { label: 'Yes', value: 'yes' },
@@ -50,6 +56,31 @@ const EducationalInfo = ({ data, onChange, checkBoxList,  onCheckBoxListChange }
     { label: '12th', value: '12th' },
     { label: 'Graduate & Above', value: 'graduate&Above' },
   ];
+
+  useEffect(()=>{
+    if (data?.languages) {
+      
+      let formatted: any[] = [];
+      let i = 1;
+
+      while (true) {
+        const langKey = `Language${i}` as any;
+        const name = data.languages[langKey];
+        
+        // Stop if no more languages
+        if (name === undefined) break;
+
+        formatted.push({
+          name,
+          read: data.languages[`${langKey}_read`] === 'on',
+          spoken: data.languages[`${langKey}_spoken`] === 'on',
+          written: data.languages[`${langKey}_written`] === 'on',
+        });
+        i++;
+      }
+      setFormattedLanguages(formatted);
+    }
+  },[data])
 
   const handleSelectedValue = (list : checkbox[], type: string)=>{
     switch (type) {
@@ -99,15 +130,18 @@ const EducationalInfo = ({ data, onChange, checkBoxList,  onCheckBoxListChange }
             break;
     }
   };
+
+  const handleLanguageValue = (value :any)=>{
+      onChange('languages',value)
+      setModalVisible(false)
+  }
  
   const openModalAccordingly = (modalToOpen: string) =>{
     switch (modalToOpen) {
         case 'OpenLanguage':
           setModalContent({
             title: 'Select your Language',
-            content: <CheckboxList data={checkBoxList.languagelist}
-            returnValue={(id)=>{handleSelectedValue(id, 'language')}}
-            ></CheckboxList>,
+            content: <LanguageSelector data={checkBoxList.languagelist} returnValue={(value)=>{handleLanguageValue(value)}}></LanguageSelector>,
             });
           break;   
         case "TypeOfVisa":
@@ -183,12 +217,46 @@ const handleAddSkills = (selectedSkills: MultiCheckboxItem[]) => {
         <InputField 
             lable="Language Known" 
             placeholder="Select Language" 
-            onChangeValue={(value) => onChange('languages', value)}
-            value={data.languages}
+            // onChangeValue={(value) => onChange('languages', value)}
+            value='Select Languages'
             hasModal= {true}
             icon="language-outline" 
             itemClicked={() => openModalAccordingly('OpenLanguage')} // Changed prop name to onIconPress
         />
+
+        {data.languages && (        
+          <View style={{marginTop: 20}}>
+          <View style={styles.header}>
+            <Text style={[styles.column, styles.languageColumn,{color: '#fff', fontWeight:'700'}]}>Language</Text>
+            <Text style={styles.column}>Read</Text>
+            <Text style={styles.column}>Speak</Text>
+            <Text style={styles.column}>Write</Text>
+          </View>
+
+          {/* Language Rows */}
+          {formattedLanguages.map((lang, index) => (
+            <View 
+              key={index} 
+              style={[
+                styles.row, 
+                index % 2 === 0 ? styles.evenRow : styles.oddRow
+              ]}
+            >
+              <Text style={[styles.column, styles.languageColumn]}>
+                {lang.name}
+              </Text>
+              <Text style={[styles.column, lang.read ? styles.tick : styles.cross]}>
+                {lang.read ? '✓' : '✗'}
+              </Text>
+              <Text style={[styles.column, lang.spoken ? styles.tick : styles.cross]}>
+                {lang.spoken ? '✓' : '✗'}
+              </Text>
+              <Text style={[styles.column, lang.written ? styles.tick : styles.cross]}>
+                {lang.written ? '✓' : '✗'}
+              </Text>
+            </View>
+            ))}
+        </View>)}
 
         <View style= {styles.SkillsContainer}>
             <InputField 
@@ -209,25 +277,6 @@ const handleAddSkills = (selectedSkills: MultiCheckboxItem[]) => {
                 ))}
             </View>
         </View>
-          {/* <View style={styles.checkOuter}>
-            <Text style={styles.inputLabel}>Speak</Text>
-            <Text style={styles.inputLabel}>Read</Text>
-            <Text style={styles.inputLabel}>Write</Text>
-          </View>
-          <View style={styles.checkOuter}>
-            <RadioButton 
-                selected={isSelected} 
-                onPress={() => setIsSelected(!isSelected)} 
-              />
-            <RadioButton 
-                selected={isSelected} 
-                onPress={() => setIsSelected(!isSelected)} 
-              />
-            <RadioButton 
-                selected={isSelected} 
-                onPress={() => setIsSelected(!isSelected)} 
-              />  
-          </View> */}
 
         <BottomSheet 
                 visible={modalVisible} 
@@ -380,6 +429,48 @@ skillText: {
 fontSize: 10,
 fontWeight : '300',
 textAlign: 'center'
-}
+},
+header: {
+    flexDirection: 'row',
+    backgroundColor: '#5B94E2',
+    paddingVertical: 12,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  evenRow: {
+    backgroundColor: '#f9f9f9',
+  },
+  oddRow: {
+    backgroundColor: '#ffffff',
+  },
+  column: {
+    flex: 1,
+    color: '#fff',
+    fontWeight: '700',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  languageColumn: {
+    color : '#5B94E2',
+    flex: 2,
+    textAlign: 'left',
+    paddingLeft: 16,
+    fontWeight: '400',
+  },
+  tick: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  cross: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
 
 })
