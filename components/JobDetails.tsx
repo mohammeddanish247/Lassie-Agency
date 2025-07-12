@@ -18,6 +18,7 @@ interface JobDetailsProps {
 const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobDetailsProps) => {
     const { showLoading} = useLoader();
     const [modalVisible, setModalVisible] = useState(false);
+    const [checkFlag, setCheckFlag] = useState(true);
     const [salaryExpected, setSalaryExpected] = useState<string>('');
     const [salaryTerm, setSalaryTerm] = useState<string>('');
 
@@ -139,16 +140,30 @@ const JobDetails = ({ data, onChange, checkBoxList, onCheckBoxListChange }: JobD
         }    
     }
 
+    
+
      useEffect(() => {
+         if (!checkFlag) {
+            if (salaryExpected && salaryTerm) {
+            const combined = `${salaryExpected}-${salaryTerm}`;
+            onChange('salary_expected', combined);
+        }
+        }
+        if (checkFlag) {
+             if (data.salary_expected) {
+            const [initialSalary, initialTerm] = data.salary_expected.split('-');
+            setSalaryExpected(initialSalary);
+            setSalaryTerm(initialTerm);
+            setCheckFlag(false)
+        }
+        }
         // if (data.salary_expected) {
         //     const [initialSalary, initialTerm] = data.salary_expected.split('-');
         //     setSalaryExpected(initialSalary);
         //     setSalaryTerm(initialTerm);
         // }
-         if (salaryExpected && salaryTerm) {
-            const combined = `${salaryExpected}-${salaryTerm}`;
-            onChange('salary_expected', combined);
-        }
+       
+         
     }, [salaryExpected, salaryTerm]);
     
     const salaryExpectedForm=()=>{

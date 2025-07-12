@@ -1,4 +1,4 @@
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type ChipProps = {
   label: string;
@@ -27,15 +27,15 @@ export const Chip = ({ label, selected = false, onPress }: ChipProps) => {
 
 const styles = StyleSheet.create({
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderRadius: 16,
-    marginRight: 8,
+    marginRight: 5,
     marginBottom: 8,
     borderWidth: 1,
   },
   unselectedChip: {
-    backgroundColor: 'white',
+    backgroundColor: '#E1EDFC',
     borderColor: '#e0e0e0',
   },
   selectedChip: {

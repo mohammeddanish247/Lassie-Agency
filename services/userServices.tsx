@@ -456,8 +456,21 @@ const api = axios.create({
       const formData = new FormData();
       formData.append('agency_id', id)
       formData.append('jobseeker_locality', 'NA')
+      if (data.skill && Array.isArray(data.skill)) {
+          data.skill.forEach(skill => {
+            // formData.append('skill[]', skill);
+            formData.append('skill[jobseeker_skills[]]',`${skill}`);
+          });
+      }
+      if (data.languages) {
+        Object.entries(data.languages).forEach(([key, value]) => {
+          formData.append(`languages[${key}]`, `${value}`);
+        });
+      }
       Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, value.toString());
+        if (!['languages', 'skill'].includes(key) && value !== undefined) {
+          formData.append(key, value.toString());
+        }
       });
       const res = await api.post<any>(add_Candidate, formData)
       return res.data

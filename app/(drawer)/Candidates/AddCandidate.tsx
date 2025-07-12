@@ -67,6 +67,7 @@ export default function AddCandidate() {
         jobseeker_yourcountry: '',
         jobseeker_yourstate: '',
         jobseeker_yourcity : '',
+        jobseeker_locality: '',
         job_title: '',
         job_type: '',
         jobseeker_currency: '',
@@ -84,7 +85,7 @@ export default function AddCandidate() {
         experience_Nature_of_Work: '',
         experience_Reason_for_leaving: '',
         jobseeker_education: '',
-        skill: {},
+        skill: [],
         jobseeker_passport: '',
         type_of_visa: '',
         jobseeker_visa_expiry_date: '',
@@ -670,7 +671,7 @@ const personalInfoValid = (): boolean => {
 
     return Boolean(
         formData.jobseeker_education?.trim() &&
-        formData.languages?.trim() &&
+        formData.languages &&
         formData.skill &&
         formData.jobseeker_passport?.trim() &&
         passportValid &&
@@ -687,7 +688,7 @@ const personalInfoValid = (): boolean => {
             Alert.alert('Error', 'Please select education qualification');
             return false;
         }
-         if (!formData.languages?.trim()) {
+         if (!formData.languages) {
             Alert.alert('Error', 'Please select language');
             return false;
         }
@@ -877,7 +878,7 @@ const personalInfoValid = (): boolean => {
 
       <View style={styles.container}>
        {/* personal Information */}
-        {step === 4 && 
+        {step === 1 && 
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <PersonalInfo data={formData} 
@@ -913,7 +914,7 @@ const personalInfoValid = (): boolean => {
         </KeyboardAvoidingView> 
         }
         {/* Education Info */}
-        {step === 1 && 
+        {step === 4 && 
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                    <EducationalInfo data={formData} 

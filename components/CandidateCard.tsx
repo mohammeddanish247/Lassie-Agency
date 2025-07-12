@@ -56,7 +56,8 @@ const CandidateCard = ({ candidate, AddWishlist, ViewCVClicked,ContactClicked, i
             </View>
 
             <Text style={styles.shiftText}>{candidate.job_type}</Text>
-            <Text style={styles.locationText}>{candidate.jobseeker_yourcity}, {candidate.jobseeker_yourstate}, {candidate.jobseeker_yourcountry}</Text>
+            <Text style={styles.locationText}>{candidate.canditate_location}, {candidate.jobseeker_yourcity}, {candidate.jobseeker_yourstate}</Text>
+            <Text style={styles.locationText}>{candidate.jobseeker_yourcountry}</Text>
             <Text style={styles.salaryText}>{candidate.canditate_salary}</Text>
             
             <View style={styles.buttonRow}>

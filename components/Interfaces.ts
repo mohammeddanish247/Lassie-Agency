@@ -300,6 +300,7 @@ export interface IFormData { // 44
   jobseeker_yourcountry: string;
   jobseeker_yourstate: string;
   jobseeker_yourcity : string;
+  jobseeker_locality: string;
   job_title: string;
   job_type: string;
   jobseeker_currency: string;
@@ -310,7 +311,7 @@ export interface IFormData { // 44
   jobseeker_ready_to_work_Locality: string;
   jobseeker_available: string;
   jobseeker_education: string;
-  skill: {};
+  skill: [];
   jobseeker_passport: string;
   type_of_visa: string;
   jobseeker_visa_expiry_date: string;

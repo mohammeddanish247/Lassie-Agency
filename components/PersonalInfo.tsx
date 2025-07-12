@@ -333,6 +333,12 @@ export const PersonalInfo = ({ data, onChange, image, onDocChange, checkBoxList,
                 icon="location-outline" 
                 itemClicked={() => openModalAccordingly('OpenCityList')} // Changed prop name to onIconPress
             />
+            <InputField 
+                lable="Your Locality" 
+                placeholder="Enter Locality" 
+                onChangeValue={(value) => onChange('jobseeker_locality', value)} 
+                value={data.jobseeker_locality}
+            />
             {/* <InputField 
                 lable="Your Country" 
                 placeholder="Enter Your Country" 
