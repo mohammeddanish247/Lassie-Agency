@@ -6,46 +6,8 @@ import * as Sharing from "expo-sharing"
 import { forwardRef, useImperativeHandle } from "react"
 import { Alert } from "react-native"
 
-interface Candidate {
-  canditate_photo?: string
-  canditate_name?: string
-  job_title?: string
-  jobseeker_yourcity?: string
-  jobseeker_yourstate?: string
-  registration_type?: string
-  canditate_age?: string
-  jobseeker_gender?: string
-  canditate_marital_status?: string
-  jobseeker_religion?: string
-  jobseeker_ethnicity?: string
-  jobseeker_height?: string
-  jobseeker_weight?: string
-  jobseeker_languages?: string
-  job_type?: string
-  canditate_experience?: string
-  canditate_salary?: string
-  canditate_currency?: string
-  jobseeker_skills?: string
-  experience_Job_title?: string
-  experience_Location?: string
-  experience_Salary?: string
-  experience_From_To?: string
-  experience_Nature_of_Work?: string
-  experience_Reason_for_leaving?: string
-  jobseeker_passport?: string
-  jobseeker_visa_type?: string
-  jobseeker_visa_expiry_date?: string
-  jobseeker_visa_Available_from?: string
-  jobseeker_ready_to_work_Country?: string
-  jobseeker_ready_to_work_State?: string
-  jobseeker_education?: string
-  jobseeker_addressproof?: string
-  jobseeker_idproof?: string
-  jobseeker_pcc?: string
-}
-
 interface PDFGeneratorProps {
-  candidate: Candidate
+  candidate: any
 }
 
 interface PDFGeneratorRef {
@@ -54,6 +16,68 @@ interface PDFGeneratorRef {
 }
 
 const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate }, ref) => {
+  // Function to parse and format language skills
+  const formatLanguageSkills = (languagesData: any) => {
+    if (!languagesData || typeof languagesData !== "object") {
+      return '<div class="info-value">No language information available</div>'
+    }
+
+    const languages: {
+      name: string
+      read: boolean
+      spoken: boolean
+      written: boolean
+    }[] = []
+
+    // Extract language data
+    const languageKeys = Object.keys(languagesData).filter((key) => key.startsWith("Language") && !key.includes("_"))
+
+    languageKeys.forEach((key) => {
+      const languageName = languagesData[key]
+      const languageNumber = key.replace("Language", "")
+
+      if (languageName) {
+        languages.push({
+          name: languageName,
+          read: languagesData[`Language${languageNumber}_read`] === "on",
+          spoken: languagesData[`Language${languageNumber}_spoken`] === "on",
+          written: languagesData[`Language${languageNumber}_written`] === "on",
+        })
+      }
+    })
+
+    if (languages.length === 0) {
+      return '<div class="info-value">No languages specified</div>'
+    }
+
+    return languages
+      .map(
+        (lang) => `
+    <div class="language-card">
+      <div class="language-name">${lang.name}</div>
+      <div class="language-skills">
+        <div class="skill-item">
+          <span class="skill-icon">📖</span>
+          <span class="skill-label">Read:</span>
+          <span class="skill-status ${lang.read ? "skill-yes" : "skill-no"}">${lang.read ? "✓" : "✗"}</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-icon">🗣️</span>
+          <span class="skill-label">Speak:</span>
+          <span class="skill-status ${lang.spoken ? "skill-yes" : "skill-no"}">${lang.spoken ? "✓" : "✗"}</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-icon">✍️</span>
+          <span class="skill-label">Write:</span>
+          <span class="skill-status ${lang.written ? "skill-yes" : "skill-no"}">${lang.written ? "✓" : "✗"}</span>
+        </div>
+      </div>
+    </div>
+  `,
+      )
+      .join("")
+  }
+
   const generateHTML = () => {
     return `
     <!DOCTYPE html>
@@ -197,7 +221,104 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           font-weight: 600;
           margin-bottom: 10px;
         }
-        
+
+        /* Language Skills Styles */
+        .languages-section {
+          background: #f8fafc;
+          padding: 20px;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .language-card {
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .language-card:last-child {
+          margin-bottom: 0;
+        }
+
+        .language-name {
+          font-size: 1.3em;
+          font-weight: 600;
+          color: #5B94E2;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+
+        .language-skills {
+          display: flex;
+          justify-content: space-around;
+          gap: 15px;
+        }
+
+        .skill-item {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 12px;
+          border-radius: 8px;
+          min-width: 80px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+        }
+
+        .skill-icon {
+          font-size: 24px;
+          margin-right: 5px;
+        }
+
+        .skill-label {
+          font-size: 0.9em;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #64748b;
+          margin-right: 5px;
+        }
+
+        .skill-status {
+          font-size: 20px;
+          font-weight: bold;
+        }
+
+        .skill-yes {
+          color: #22c55e;
+        }
+
+        .skill-no {
+          color: #ef4444;
+        }
+
+        @media (max-width: 600px) {
+          .language-skills {
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .skill-item {
+            flex-direction: row;
+            justify-content: space-between;
+            min-width: auto;
+            padding: 15px;
+          }
+          
+          .skill-icon {
+            margin-bottom: 0;
+            margin-right: 10px;
+          }
+          
+          .skill-label {
+            margin-bottom: 0;
+            flex-grow: 1;
+          }
+        }
+
         .footer {
           background: #f8fafc;
           padding: 20px 30px;
@@ -209,6 +330,24 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
         @media print {
           body { background: white; }
           .container { box-shadow: none; }
+        }
+
+        @media (max-width: 600px) {
+          .language-skills {
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .skill-item {
+            flex-direction: row;
+            justify-content: flex-start;
+            min-width: auto;
+          }
+          
+          .skill-icon {
+            margin-bottom: 0;
+            margin-right: 10px;
+          }
         }
       </style>
     </head>
@@ -270,10 +409,17 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
                 <div class="info-label">Weight</div>
                 <div class="info-value">${candidate?.jobseeker_weight || "N/A"}</div>
               </div>
-              <div class="info-item">
-                <div class="info-label">Languages</div>
-                <div class="info-value">${candidate?.jobseeker_languages || "N/A"}</div>
-              </div>
+            </div>
+          </div>
+
+          <!-- Language Skills Section -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-icon">🌐</span>
+              <h2>Language Skills</h2>
+            </div>
+            <div class="languages-section">
+              ${formatLanguageSkills(candidate?.jobseeker_languages)}
             </div>
           </div>
           
@@ -298,7 +444,7 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
               </div>
               <div class="info-item">
                 <div class="info-label">Skills</div>
-                <div class="info-value">${candidate?.jobseeker_skills || "N/A"}</div>
+                <div class="info-value">${candidate?.jobseeker_skills.jobseeker_skills || "N/A"}</div>
               </div>
             </div>
           </div>
@@ -398,7 +544,7 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
         </div>
         
         <div class="footer">
-          <p>Generated on ${new Date().toLocaleDateString()} | Candidate Profile Report</p>
+          <p>Generated on ${new Date().toLocaleDateString()} | Lassie HR Solutions Pvt. Ltd. </p>
         </div>
       </div>
     </body>
@@ -409,12 +555,10 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
   const generatePDF = async () => {
     try {
       const html = generateHTML()
-
       const { uri } = await Print.printToFileAsync({
         html,
         base64: false,
       })
-
       return uri
     } catch (error) {
       console.error("Error generating PDF:", error)
@@ -425,7 +569,6 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
   const sharePDF = async () => {
     try {
       const pdfUri = await generatePDF()
-
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(pdfUri, {
           mimeType: "application/pdf",
@@ -446,12 +589,10 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
       const pdfUri = await generatePDF()
       const fileName = `${candidate?.canditate_name || "candidate"}_profile_${Date.now()}.pdf`
       const downloadPath = `${FileSystem.documentDirectory}${fileName}`
-
       await FileSystem.moveAsync({
         from: pdfUri,
         to: downloadPath,
       })
-
       Alert.alert("Success", `PDF saved to: ${downloadPath}`, [
         { text: "OK" },
         { text: "Share", onPress: () => Sharing.shareAsync(downloadPath) },
@@ -467,9 +608,9 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
     downloadPDF,
   }))
 
-  // Remove the return statement with buttons, just return null or a hidden view
   return null
 })
 
 export default PDFGenerator
 export type { PDFGeneratorRef }
+

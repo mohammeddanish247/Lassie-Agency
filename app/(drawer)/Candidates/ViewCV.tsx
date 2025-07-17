@@ -6,83 +6,8 @@ import { getGlobalStyles } from "@/styles/globalStyles";
 import { FontAwesome5, FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import type React from "react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-interface CandidateData {
-  registration_type: string
-  canditate_name: string
-  job_title: string
-  job_type: string
-  canditate_location: string
-  canditate_salary: string
-  canditate_experience: string
-  canditate_marital_status: string
-  canditate_currency: string
-  canditate_age: string
-  jobseeker_ethnicity: string
-  jobseeker_skills: string
-  jobseeker_gender: string
-  jobseeker_passport: string
-  jobseeker_yourcity: string
-  jobseeker_yourstate: string
-  jobseeker_yourcountry: string
-  iswishlisted: boolean
-  jobseeker_religion: string
-  jobseeker_height: string
-  jobseeker_weight: string
-  jobseeker_experience: string
-  jobseeker_visa_type: string
-  jobseeker_visa_expiry_date: string
-  jobseeker_visa_Available_from: string
-  jobseeker_languages: string
-  jobseeker_ready_to_work_Country: string
-  jobseeker_ready_to_work_State: string
-  jobseeker_ready_to_work_City: string
-  jobseeker_ready_to_work_Locality: string
-  jobseeker_education: string
-  jobseeker_addressproof: string
-  jobseeker_idproof: string
-  jobseeker_pcc: string
-}
-
-const sampleCandidate = {
-  canditate_photo: "https://example.com/photo.jpg",
-  canditate_name: "John Doe",
-  job_title: "Software Engineer",
-  jobseeker_yourcity: "New York",
-  jobseeker_yourstate: "NY",
-  registration_type: "Premium",
-  canditate_age: "28",
-  jobseeker_gender: "Male",
-  canditate_marital_status: "Single",
-  jobseeker_religion: "Christian",
-  jobseeker_ethnicity: "Caucasian",
-  jobseeker_height: "5'10\"",
-  jobseeker_weight: "70kg",
-  jobseeker_languages: "English, Spanish",
-  job_type: "Full-time",
-  canditate_experience: "5 years",
-  canditate_salary: "80000",
-  canditate_currency: "USD",
-  jobseeker_skills: "React Native, JavaScript, TypeScript, Node.js",
-  experience_Job_title: "Senior Developer",
-  experience_Location: "San Francisco, CA",
-  experience_Salary: "75000 USD",
-  experience_From_To: "2020 - 2023",
-  experience_Nature_of_Work: "Mobile app development",
-  experience_Reason_for_leaving: "Career growth",
-  jobseeker_passport: "Yes",
-  jobseeker_visa_type: "H1B",
-  jobseeker_visa_expiry_date: "2025-12-31",
-  jobseeker_visa_Available_from: "2024-01-01",
-  jobseeker_ready_to_work_Country: "USA",
-  jobseeker_ready_to_work_State: "California",
-  jobseeker_education: "Bachelor's in Computer Science",
-  jobseeker_addressproof: "Utility Bill",
-  jobseeker_idproof: "Driver's License",
-  jobseeker_pcc: "Available",
-}
 
 const InfoRow = ({
   icon,
@@ -189,50 +114,50 @@ const LanguageRow = ({
 }
 
 const MaterialInfoRow = ({
-  icon,
-  label,
-  value,
-  iconColor = "#666",
-}: {
-  icon: string
-  label: string
-  value: string
-  iconColor?: string
-}) => (
-  <View style={styles.infoRow}>
-    <MaterialIcons name={icon as any} size={20} color={iconColor} style={styles.icon} />
-    <View style={styles.infoContent}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+    icon,
+    label,
+    value,
+    iconColor = "#666",
+  }: {
+    icon: string
+    label: string
+    value: string
+    iconColor?: string
+  }) => (
+    <View style={styles.infoRow}>
+      <MaterialIcons name={icon as any} size={20} color={iconColor} style={styles.icon} />
+      <View style={styles.infoContent}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.value}>{value}</Text>
+      </View>
     </View>
-  </View>
 )
 
 const FontAwesome5InfoRow = ({
-  icon,
-  label,
-  value,
-  iconColor = "#666",
-}: {
-  icon: string
-  label: string
-  value: string
-  iconColor?: string
-}) => (
-  <View style={styles.infoRow}>
-    <FontAwesome5 name={icon as any} size={18} color={iconColor} style={styles.icon} />
-    <View style={styles.infoContent}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+    icon,
+    label,
+    value,
+    iconColor = "#666",
+  }: {
+    icon: string
+    label: string
+    value: string
+    iconColor?: string
+  }) => (
+    <View style={styles.infoRow}>
+      <FontAwesome5 name={icon as any} size={18} color={iconColor} style={styles.icon} />
+      <View style={styles.infoContent}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.value}>{value}</Text>
+      </View>
     </View>
-  </View>
 )
 
-const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <View style={styles.content}>
-    {children}
-  </View>
-)
+// const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
+//   <View style={styles.content}>
+//     {children}
+//   </View>
+// )
 
 const parseCurrency = (currencyString: string) => {
   const parts = currencyString.split(" — ")
@@ -245,34 +170,36 @@ const formatSalary = (salary: string, currency: string = '') => {
 }
 
 export default function CandidateProfile() {
-      const pdfGeneratorRef = useRef<PDFGeneratorRef>(null)
-      const params : any = useLocalSearchParams();
-      console.log(params.id);
-      const { userData } = useContext(UserContext);
-      const [ candidate, setCV ] = useState<any>();
-      const [isLoading, setisLoading] = useState(true);
-      
-      const getCVDetails = () => {
-        if(userData){
-           ApiService.getCV(params.id, userData.user_id).then(res=>{
-            if (res.isSuccess == "true") {
-              console.log(res.result[0]);
-              console.log("CV laided");
-              setCV(res.result[0]);
-            }
-           }).catch(err=>{
-            console.log(err);
-           }).finally(()=>{
-            setisLoading(false)
-           })
-        } else {
-          Alert.alert('Data Not Available','User data context not Available')
-        }
-      }
   
-      useEffect(()=>{
-        getCVDetails();
-      },[])
+  const pdfGeneratorRef = useRef<PDFGeneratorRef>(null);
+  const params = useLocalSearchParams<any>();
+  const { userData } = useContext(UserContext);
+  const [candidate, setCV] = useState<any>();
+  const [isLoading, setisLoading] = useState(true);
+
+  const getCVDetails = useCallback(async () => {
+    if (!userData) {
+      Alert.alert('Data Not Available', 'User data context not Available');
+      setisLoading(false);
+      return;
+    }
+
+    try {
+      const res = await ApiService.getCV(params.id, userData.user_id);
+      if (res.isSuccess === "true") {
+        setCV(res.result[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', 'Failed to load CV details');
+    } finally {
+      setisLoading(false);
+    }
+  }, [userData, params.id]);
+
+  useEffect(() => {
+    getCVDetails();
+  }, [getCVDetails]);
 
 
   const handleSharePress = async () => {
@@ -282,6 +209,7 @@ export default function CandidateProfile() {
       console.error("Error sharing PDF:", error)
     }
   }
+
 
   if(isLoading) {
     return(
@@ -560,7 +488,7 @@ const styles = StyleSheet.create({
   },
     imageContainer: {
     position: 'relative',
-    height: 300,
+    height: 500,
     backgroundColor: '#F5F5F5',
     marginBottom: 16,
      shadowColor: "#000",

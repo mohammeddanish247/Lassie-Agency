@@ -326,7 +326,7 @@ const api = axios.create({
       return res.data
     },
 
-    uploadProfilePhoto : async(agency_id : string, imageUri : String) =>{
+    uploadProfilePhoto : async(agency_id : string, imageUri : string) =>{
       const formData = new FormData();
       formData.append('agency_id', agency_id);
       formData.append('agency_profile_photo', {
@@ -338,7 +338,7 @@ const api = axios.create({
       return res.data
     },
 
-    uploadCertificate : async(agency_id : string, imageUri : String) =>{
+    uploadCertificate : async(agency_id : string, imageUri : string) =>{
       const formData = new FormData();
       formData.append('agency_id', agency_id);
       formData.append('agency_certificate', {
@@ -350,7 +350,7 @@ const api = axios.create({
       return res.data
     },
 
-    uploadAgencyLogo : async(agency_id : string, imageUri : String) =>{
+    uploadAgencyLogo : async(agency_id : string, imageUri : string) =>{
       const formData = new FormData();
       formData.append('agency_id', agency_id);
       formData.append('company_logo', {
@@ -455,11 +455,61 @@ const api = axios.create({
     addCandidate: async(data : Partial<IFormData>, id: string)=>{
       const formData = new FormData();
       formData.append('agency_id', id)
-      formData.append('jobseeker_locality', 'NA')
+      if (data.reference_name) {
+          data.reference_name.split(',').forEach(name => {
+            formData.append('reference_name[]', name);
+          });
+      } 
+      if (data.reference_mobile) {
+        data.reference_mobile.split(',').forEach(mobile => {
+          formData.append('reference_mobile[]', mobile);
+        });
+      }
+
+      if (data.reference_relationship) {
+        data.reference_relationship.split(',').forEach(relationship => {
+          formData.append('reference_relationship[]', relationship);
+        });
+      }
+
+      if (data.reference_any_id_number) {
+        data.reference_any_id_number.split(',').forEach(idNumber => {
+          formData.append('reference_any_id_number[]', idNumber);
+        });
+      }
       if (data.skill && Array.isArray(data.skill)) {
           data.skill.forEach(skill => {
-            // formData.append('skill[]', skill);
-            formData.append('skill[jobseeker_skills[]]',`${skill}`);
+            formData.append('skill[]', skill);
+          });
+      }
+      if (data.experience_Job_title && Array.isArray(data.experience_Job_title)) {
+          data.experience_Job_title.forEach(experience_Job_title => {
+            formData.append('experience_Job_title[]', experience_Job_title);
+          });
+      }
+      if (data.experience_Location && Array.isArray(data.experience_Location)) {
+          data.experience_Location.forEach(experience_Location => {
+            formData.append('experience_Location[]', experience_Location);
+          });
+      }
+      if (data.experience_Salary && Array.isArray(data.experience_Salary)) {
+          data.experience_Salary.forEach(experience_Salary => {
+            formData.append('experience_Salary[]', experience_Salary);
+          });
+      }
+      if (data.experience_From_To && Array.isArray(data.experience_From_To)) {
+          data.experience_From_To.forEach(experience_From_To => {
+            formData.append('experience_From_To[]', experience_From_To);
+          });
+      }
+      if (data.experience_Nature_of_Work && Array.isArray(data.experience_Nature_of_Work)) {
+          data.experience_Nature_of_Work.forEach(experience_Nature_of_Work => {
+            formData.append('experience_Nature_of_Work[]', experience_Nature_of_Work);
+          });
+      }
+      if (data.experience_Reason_for_leaving && Array.isArray(data.experience_Reason_for_leaving)) {
+          data.experience_Reason_for_leaving.forEach(experience_Reason_for_leaving => {
+            formData.append('experience_Reason_for_leaving[]', experience_Reason_for_leaving);
           });
       }
       if (data.languages) {
@@ -468,10 +518,11 @@ const api = axios.create({
         });
       }
       Object.entries(data).forEach(([key, value]) => {
-        if (!['languages', 'skill'].includes(key) && value !== undefined) {
+        if (!['experience_Reason_for_leaving','experience_Nature_of_Work','experience_From_To','experience_Salary','experience_Location','experience_Job_title','languages', 'skill','reference_name','reference_mobile','reference_relationship','reference_any_id_number'].includes(key) && value !== undefined) {
           formData.append(key, value.toString());
         }
       });
+      console.log(JSON.stringify(formData));
       const res = await api.post<any>(add_Candidate, formData)
       return res.data
     },

@@ -174,8 +174,8 @@ export interface CountryCurrency {
 }
 
 export interface TypeOfVisa {
-  typeofvisa_name: String
-  typeofvisa_id: String
+  typeofvisa_name: string
+  typeofvisa_id: string
 }
 
 export interface JobTypes {

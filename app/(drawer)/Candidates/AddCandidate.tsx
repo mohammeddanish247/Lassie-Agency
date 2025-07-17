@@ -494,23 +494,23 @@ export default function AddCandidate() {
     };
 
     
-const personalInfoValid = (): boolean => {        
-    return Boolean(
-        candidateDocs.canditate_image?.trim() &&
-        formData.first_name?.trim() &&
-        formData.last_name?.trim() &&
-        (formData.mobile_number && /^\d{10}$/.test(formData.mobile_number.trim())) &&
-        formData.gender?.trim() &&
-        formData.marital_status?.trim() &&
-        formData.age?.trim() &&
-        formData.dob?.trim() &&
-        formData.jobseeker_nationality?.trim() &&
-        formData.jobseeker_ethnicity?.trim() &&
-        formData.religion?.trim() &&
-        formData.height?.trim() &&
-        formData.weight?.trim()
-    );
-}
+// const personalInfoValid = (): boolean => {        
+//     return Boolean(
+//         candidateDocs.canditate_image?.trim() &&
+//         formData.first_name?.trim() &&
+//         formData.last_name?.trim() &&
+//         (formData.mobile_number && /^\d{10}$/.test(formData.mobile_number.trim())) &&
+//         formData.gender?.trim() &&
+//         formData.marital_status?.trim() &&
+//         formData.age?.trim() &&
+//         formData.dob?.trim() &&
+//         formData.jobseeker_nationality?.trim() &&
+//         formData.jobseeker_ethnicity?.trim() &&
+//         formData.religion?.trim() &&
+//         formData.height?.trim() &&
+//         formData.weight?.trim()
+//     );
+// }
 
     const personalInfoValidationCheck = (): boolean  =>{        
         if (!candidateDocs.canditate_image?.trim()) {
@@ -580,19 +580,19 @@ const personalInfoValid = (): boolean => {
           return true;
     }
 
-    const jobDetailsValid = (): boolean => {
-    return Boolean(
-        formData.job_title?.trim() &&
-        formData.job_type?.trim() &&
-        formData.jobseeker_available?.trim() &&
-        formData.salary_expected?.trim() &&
-        formData.jobseeker_currency?.trim() &&
-        formData.jobseeker_ready_to_work_Country?.trim() &&
-        formData.jobseeker_ready_to_work_State?.trim() &&
-        formData.jobseeker_ready_to_work_City?.trim() &&
-        formData.jobseeker_ready_to_work_Locality?.trim()
-        );
-    }
+    // const jobDetailsValid = (): boolean => {
+    // return Boolean(
+    //     formData.job_title?.trim() &&
+    //     formData.job_type?.trim() &&
+    //     formData.jobseeker_available?.trim() &&
+    //     formData.salary_expected?.trim() &&
+    //     formData.jobseeker_currency?.trim() &&
+    //     formData.jobseeker_ready_to_work_Country?.trim() &&
+    //     formData.jobseeker_ready_to_work_State?.trim() &&
+    //     formData.jobseeker_ready_to_work_City?.trim() &&
+    //     formData.jobseeker_ready_to_work_Locality?.trim()
+    //     );
+    // }
 
    const jobDetailsValidatoionCheck = (): boolean=>{
         if (!formData.job_title?.trim()) {
@@ -636,17 +636,17 @@ const personalInfoValid = (): boolean => {
    }
 
 
-   const experienceValid = (): boolean => {
-    return Boolean(
-        formData.experience?.trim() &&
-        (formData.experience_Job_title?.trim() || 
-         formData.experience_Location?.trim() || 
-         formData.experience_Salary?.trim() ||
-         formData.experience_From_To?.trim() || 
-         formData.experience_Nature_of_Work?.trim() || 
-         formData.experience_Reason_for_leaving?.trim())
-    );
-};
+//    const experienceValid = (): boolean => {
+//     return Boolean(
+//         formData.experience?.trim() &&
+//         (formData.experience_Job_title?.trim() || 
+//          formData.experience_Location?.trim() || 
+//          formData.experience_Salary?.trim() ||
+//          formData.experience_From_To?.trim() || 
+//          formData.experience_Nature_of_Work?.trim() || 
+//          formData.experience_Reason_for_leaving?.trim())
+//     );
+// };
 
    const experienceValidationCheck = (): boolean=>{
          if (!formData.experience?.trim()) {
@@ -662,26 +662,26 @@ const personalInfoValid = (): boolean => {
    }
 
 
-   const educationAndOtherValid = (): boolean => {
-    const passportValid = formData.jobseeker_passport !== 'yes' || (
-        formData.type_of_visa?.trim() &&
-        formData.jobseeker_visa_Available_from?.trim() &&
-        formData.jobseeker_visa_expiry_date?.trim()
-    );
+//    const educationAndOtherValid = (): boolean => {
+//     const passportValid = formData.jobseeker_passport !== 'yes' || (
+//         formData.type_of_visa?.trim() &&
+//         formData.jobseeker_visa_Available_from?.trim() &&
+//         formData.jobseeker_visa_expiry_date?.trim()
+//     );
 
-    return Boolean(
-        formData.jobseeker_education?.trim() &&
-        formData.languages &&
-        formData.skill &&
-        formData.jobseeker_passport?.trim() &&
-        passportValid &&
-        formData.jobseeker_pcc?.trim() &&
-        formData.jobseeker_verification_doc?.trim() &&
-        formData.jobseeker_doc_impre?.trim() &&
-        formData.jobseeker_addressproof?.trim() &&
-        formData.jobseeker_idproof?.trim()
-    );
-};
+//     return Boolean(
+//         formData.jobseeker_education?.trim() &&
+//         formData.languages &&
+//         formData.skill &&
+//         formData.jobseeker_passport?.trim() &&
+//         passportValid &&
+//         formData.jobseeker_pcc?.trim() &&
+//         formData.jobseeker_verification_doc?.trim() &&
+//         formData.jobseeker_doc_impre?.trim() &&
+//         formData.jobseeker_addressproof?.trim() &&
+//         formData.jobseeker_idproof?.trim()
+//     );
+// };
 
    const educationAndOtherValidationCheck = (): boolean=>{
          if (!formData.jobseeker_education?.trim()) {
@@ -744,10 +744,10 @@ const personalInfoValid = (): boolean => {
             return false;
         }
 
-           if (!formData.reference_mobile?.trim() || !/^\d{10}$/.test(formData.reference_mobile?.trim()) || !/^\d+$/.test(formData.reference_mobile)) {
-            Alert.alert('Error', 'Please enter a valid 10-digit reference mobile number');
-            return false;
-        }
+        //    if (!formData.reference_mobile?.trim() || !/^\d{10}$/.test(formData.reference_mobile?.trim()) || !/^\d+$/.test(formData.reference_mobile)) {
+        //     Alert.alert('Error', 'Please enter a valid 10-digit reference mobile number');
+        //     return false;
+        // }
            if (!formData.reference_relationship?.trim()) {
             Alert.alert('Error', 'Please enter reference relation');
             return false;
@@ -795,8 +795,9 @@ const personalInfoValid = (): boolean => {
                 }
                 console.log(res);
             }).catch(err=>{
-                console.error(err)
+                Alert.alert('Error',err.message)
             }).finally(()=>{
+              showLoading(false)
             })
         }
     }
