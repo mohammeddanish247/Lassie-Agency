@@ -246,7 +246,8 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
                 <Text style={styles.rechargeButtonText}>Download Full CV</Text>
                 </TouchableOpacity>
               </View>
-              <PDFGenerator ref={pdfGeneratorRef} candidate={candidate} isDownload={true} mobile_no={candidate.canditate_phone}/>
+              <PDFGenerator ref={pdfGeneratorRef} candidate={candidate} isDownload={true} mobile_no={candidate.canditate_phone}
+              reff={candidate.jobseeker_reference_details}/>
              <View>
               <Text style={[styles.title, {marginTop: 50}]}>Recharge Balance</Text>
               <Text style={styles.subtitle}>Unlock the candidate’s contact details by recharging your balance.</Text>

@@ -10,7 +10,7 @@ interface PDFGeneratorProps {
   candidate: any
   isDownload?: boolean
   mobile_no?: string
-  id_no?: string
+  reff?: string
 }
 
 interface PDFGeneratorRef {
@@ -18,7 +18,7 @@ interface PDFGeneratorRef {
   downloadPDF: () => Promise<void>
 }
 
-const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate, isDownload, mobile_no, id_no}, ref) => {
+const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate, isDownload, mobile_no, reff}, ref) => {
   // Function to parse and format language skills
   const formatLanguageSkills = (languagesData: any) => {
     if (!languagesData || typeof languagesData !== "object") {
@@ -147,6 +147,50 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
         </div>
       </div>
     `,
+      )
+      .join("")
+  }
+
+  // Function to format reference details
+  const formatReferenceDetails = (reffData: any) => {
+    if (!reffData || typeof reffData !== "object") {
+      return '<div class="info-value">No reference information available</div>'
+    }
+
+    const referenceNames = reffData.reference_name || []
+    const referenceMobiles = reffData.reference_mobile || []
+    const referenceRelationships = reffData.reference_relationship || []
+    const referenceIdNumbers = reffData.reference_any_id_number || []
+
+    if (referenceNames.length === 0) {
+      return '<div class="info-value">No references specified</div>'
+    }
+
+    return referenceNames
+      .map(
+        (name: string, index: number) => `
+    <div class="reference-card">
+      <div class="reference-title">Reference ${index + 1}</div>
+      <div class="reference-info">
+        <div class="reference-item">
+          <span class="reference-label">Name:</span>
+          <span class="reference-value">${name || "N/A"}</span>
+        </div>
+        <div class="reference-item">
+          <span class="reference-label">Mobile:</span>
+          <span class="reference-value">${referenceMobiles[index] || "N/A"}</span>
+        </div>
+        <div class="reference-item">
+          <span class="reference-label">Relationship:</span>
+          <span class="reference-value">${referenceRelationships[index] || "N/A"}</span>
+        </div>
+        <div class="reference-item">
+          <span class="reference-label">ID Number:</span>
+          <span class="reference-value">${referenceIdNumbers[index] || "N/A"}</span>
+        </div>
+      </div>
+    </div>
+  `,
       )
       .join("")
   }
@@ -373,6 +417,66 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           color: #ef4444;
         }
 
+        /* Reference Details Styles */
+        .reference-card {
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          margin-bottom: 15px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .reference-card:last-child {
+          margin-bottom: 0;
+        }
+
+        .reference-title {
+          font-size: 1.2em;
+          font-weight: 600;
+          color: #5B94E2;
+          margin-bottom: 15px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #5B94E2;
+        }
+
+        .reference-info {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 10px;
+        }
+
+        .reference-item {
+          display: flex;
+          flex-direction: column;
+          padding: 10px;
+          background: #f8fafc;
+          border-radius: 6px;
+          border-left: 3px solid #5B94E2;
+        }
+
+        .reference-label {
+          font-size: 0.85em;
+          font-weight: 600;
+          color: #5B94E2;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 5px;
+        }
+
+        .reference-value {
+          color: #333;
+          font-size: 1em;
+          word-wrap: break-word;
+        }
+
+        .references-section {
+          background: #f8fafc;
+          padding: 20px;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+        }
+
         .footer {
           background: #f8fafc;
           padding: 20px 30px;
@@ -470,19 +574,30 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
               ${
                 isDownload
                   ? `
-              <div class="info-item">
-                <div class="info-label">Mobile No</div>
-                <div class="info-value">${mobile_no || "N/A"}</div>
-              </div>
-              <div class="info-item">
-                <div class="info-label">ID No</div>
-                <div class="info-value">${id_no || "N/A"}</div>
-              </div>
-              `
+                    <div class="info-item">
+                      <div class="info-label">Mobile No</div>
+                      <div class="info-value">${ mobile_no|| "N/A"}</div>
+                    </div>
+                    `
                   : ""
               }
-            </div>
-          </div>
+
+          ${
+            isDownload
+              ? `
+                <!-- Reference Details Section -->
+                <div class="section">
+                  <div class="section-title">
+                    <span class="section-icon">👥</span>
+                    <h2>Reference Details</h2>
+                  </div>
+                  <div class="references-section">
+                    ${formatReferenceDetails(reff)}
+                  </div>
+                </div>
+                `
+              : ""
+          }
 
           <!-- Language Skills Section -->
           <div class="section">
