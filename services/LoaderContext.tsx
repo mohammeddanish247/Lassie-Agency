@@ -124,6 +124,8 @@ const SuccessProvider = memo(({ success, onHide }: { success: SuccessState; onHi
   );
 });
 
+SuccessProvider.displayName = 'SuccessProvider';
+
 // LoadingProvider for showing loading indicator
 const LoadingProvider = memo(({ loading }: { loading: boolean }) => {
   if (!loading) return null;
@@ -175,6 +177,8 @@ const LoadingProvider = memo(({ loading }: { loading: boolean }) => {
     </>
   );
 });
+
+LoadingProvider.displayName = 'LoadingProvider';
 
 // Hook to use the context
 export function useLoader() {

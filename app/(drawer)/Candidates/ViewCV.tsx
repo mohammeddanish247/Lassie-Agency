@@ -1,5 +1,6 @@
 import { Chip } from "@/components/chip";
 import PDFGenerator, { type PDFGeneratorRef } from "@/components/PdfGenerator";
+import { useLoader } from "@/services/LoaderContext";
 import { UserContext } from "@/services/userContext";
 import { ApiService } from "@/services/userServices";
 import { getGlobalStyles } from "@/styles/globalStyles";
@@ -176,6 +177,7 @@ export default function CandidateProfile() {
   const { userData } = useContext(UserContext);
   const [candidate, setCV] = useState<any>();
   const [isLoading, setisLoading] = useState(true);
+  const { showLoading } = useLoader();
 
   const getCVDetails = useCallback(async () => {
     if (!userData) {
@@ -204,9 +206,12 @@ export default function CandidateProfile() {
 
   const handleSharePress = async () => {
     try {
+      showLoading(true)
       await pdfGeneratorRef.current?.sharePDF()
     } catch (error) {
       console.error("Error sharing PDF:", error)
+    } finally {
+      showLoading(false)
     }
   }
 

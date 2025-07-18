@@ -1,4 +1,5 @@
 "use client"
+
 import * as FileSystem from "expo-file-system"
 import * as Print from "expo-print"
 import * as Sharing from "expo-sharing"
@@ -7,6 +8,9 @@ import { Alert } from "react-native"
 
 interface PDFGeneratorProps {
   candidate: any
+  isDownload?: boolean
+  mobile_no?: string
+  id_no?: string
 }
 
 interface PDFGeneratorRef {
@@ -14,7 +18,7 @@ interface PDFGeneratorRef {
   downloadPDF: () => Promise<void>
 }
 
-const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate }, ref) => {
+const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate, isDownload, mobile_no, id_no}, ref) => {
   // Function to parse and format language skills
   const formatLanguageSkills = (languagesData: any) => {
     if (!languagesData || typeof languagesData !== "object") {
@@ -30,9 +34,11 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
 
     // Extract language data
     const languageKeys = Object.keys(languagesData).filter((key) => key.startsWith("Language") && !key.includes("_"))
+
     languageKeys.forEach((key) => {
       const languageName = languagesData[key]
       const languageNumber = key.replace("Language", "")
+
       if (languageName) {
         languages.push({
           name: languageName,
@@ -281,7 +287,6 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           border: 1px solid #e2e8f0;
           margin-bottom: 20px;
         }
-
         .experience-card:last-child {
           margin-bottom: 0;
         }
@@ -462,6 +467,20 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
                 <div class="info-label">Weight</div>
                 <div class="info-value">${candidate?.jobseeker_weight || "N/A"}</div>
               </div>
+              ${
+                isDownload
+                  ? `
+              <div class="info-item">
+                <div class="info-label">Mobile No</div>
+                <div class="info-value">${mobile_no || "N/A"}</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">ID No</div>
+                <div class="info-value">${id_no || "N/A"}</div>
+              </div>
+              `
+                  : ""
+              }
             </div>
           </div>
 
@@ -618,10 +637,12 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
       const pdfUri = await generatePDF()
       const fileName = `${candidate?.canditate_name || "candidate"}_profile_${Date.now()}.pdf`
       const downloadPath = `${FileSystem.documentDirectory}${fileName}`
+
       await FileSystem.moveAsync({
         from: pdfUri,
         to: downloadPath,
       })
+
       Alert.alert("Success", `PDF saved to: ${downloadPath}`, [
         { text: "OK" },
         { text: "Share", onPress: () => Sharing.shareAsync(downloadPath) },

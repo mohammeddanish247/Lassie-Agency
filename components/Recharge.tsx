@@ -1,11 +1,12 @@
 import { Colors } from '@/constants/Colors';
+import { useLoader } from '@/services/LoaderContext';
 import { UserContext } from '@/services/userContext';
 import { ApiService } from '@/services/userServices';
 import { getGlobalStyles } from '@/styles/globalStyles';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import LottieView from 'lottie-react-native';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -18,6 +19,7 @@ import {
   useColorScheme,
   View
 } from 'react-native';
+import PDFGenerator, { PDFGeneratorRef } from './PdfGenerator';
 
 interface RechargeOption {
   id: number;
@@ -32,7 +34,7 @@ type RechargeOp = {
 }
 
 const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : RechargeOp) => {
-
+  const pdfGeneratorRef = useRef<PDFGeneratorRef>(null);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const globalStyles = getGlobalStyles(colorScheme ?? 'light');
@@ -42,6 +44,7 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
   const [candidate, setCandidate] = useState<any>();
   const [isExpired, setisExpired] = useState(true);
   const { userData, setUserData } = useContext(UserContext);
+  const { showLoading } = useLoader();
 
   const rechargeOptions: RechargeOption[] = [
     { id: 1, contacts: 5, price: '₹59' },
@@ -111,8 +114,15 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
       .catch(err => console.error('Failed to open dialer:', err));
   };
 
-  const ViewFullCV = () => {
-    
+  const ViewFullCV = async () => {
+     try {
+      showLoading(true)
+      await pdfGeneratorRef.current?.downloadPDF()
+    } catch (error) {
+      console.error("Error sharing PDF:", error)
+    } finally {
+      showLoading(false)
+    }
   };
 
   const upgrade = () => {
@@ -236,7 +246,7 @@ const RechargeScreen = ({candidateID, closeModal, isEmployer = false} : Recharge
                 <Text style={styles.rechargeButtonText}>Download Full CV</Text>
                 </TouchableOpacity>
               </View>
-              
+              <PDFGenerator ref={pdfGeneratorRef} candidate={candidate} isDownload={true} mobile_no={candidate.canditate_phone}/>
              <View>
               <Text style={[styles.title, {marginTop: 50}]}>Recharge Balance</Text>
               <Text style={styles.subtitle}>Unlock the candidate’s contact details by recharging your balance.</Text>
