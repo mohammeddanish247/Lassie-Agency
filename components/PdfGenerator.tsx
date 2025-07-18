@@ -1,5 +1,4 @@
 "use client"
-
 import * as FileSystem from "expo-file-system"
 import * as Print from "expo-print"
 import * as Sharing from "expo-sharing"
@@ -31,11 +30,9 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
 
     // Extract language data
     const languageKeys = Object.keys(languagesData).filter((key) => key.startsWith("Language") && !key.includes("_"))
-
     languageKeys.forEach((key) => {
       const languageName = languagesData[key]
       const languageNumber = key.replace("Language", "")
-
       if (languageName) {
         languages.push({
           name: languageName,
@@ -74,6 +71,76 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
       </div>
     </div>
   `,
+      )
+      .join("")
+  }
+
+  // Function to format experience details
+  const formatExperienceDetails = (experienceData: any) => {
+    // Handle both array format and single experience format
+    let experienceDetails = []
+
+    if (Array.isArray(experienceData)) {
+      experienceDetails = experienceData
+    } else if (experienceData && typeof experienceData === "object") {
+      experienceDetails = [experienceData]
+    } else if (candidate?.experience_details && Array.isArray(candidate.experience_details)) {
+      experienceDetails = candidate.experience_details
+    } else if (candidate?.experience_Job_title) {
+      // Fallback to old single experience format
+      experienceDetails = [
+        {
+          experience_Job_title: candidate.experience_Job_title,
+          experience_Location: candidate.experience_Location,
+          experience_Salary: candidate.experience_Salary,
+          experience_From_To: candidate.experience_From_To,
+          experience_Nature_of_Work: candidate.experience_Nature_of_Work,
+          experience_Reason_for_leaving: candidate.experience_Reason_for_leaving,
+        },
+      ]
+    }
+
+    if (experienceDetails.length === 0) {
+      return `
+        <div class="experience-card">
+          <div class="info-value" style="text-align: center; color: #666;">
+            No experience information available
+          </div>
+        </div>
+      `
+    }
+
+    return experienceDetails
+      .map(
+        (experience: any, index: number) => `
+      <div class="experience-card" style="margin-bottom: 20px;">
+        <div class="experience-title">
+          ${experience?.experience_Job_title || `Experience ${index + 1}`}
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Location</div>
+            <div class="info-value">${experience?.experience_Location || "N/A"}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Salary</div>
+            <div class="info-value">${experience?.experience_Salary || "N/A"}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Duration</div>
+            <div class="info-value">${experience?.experience_From_To || "N/A"}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Nature of Work</div>
+            <div class="info-value">${experience?.experience_Nature_of_Work || "N/A"}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Reason for Leaving</div>
+            <div class="info-value">${experience?.experience_Reason_for_leaving || "N/A"}</div>
+          </div>
+        </div>
+      </div>
+    `,
       )
       .join("")
   }
@@ -212,14 +279,20 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           padding: 20px;
           border-radius: 12px;
           border: 1px solid #e2e8f0;
-          margin-bottom: 15px;
+          margin-bottom: 20px;
+        }
+
+        .experience-card:last-child {
+          margin-bottom: 0;
         }
         
         .experience-title {
           color: #5B94E2;
           font-size: 1.3em;
           font-weight: 600;
-          margin-bottom: 10px;
+          margin-bottom: 15px;
+          padding-bottom: 8px;
+          border-bottom: 2px solid #5B94E2;
         }
 
         /* Language Skills Styles */
@@ -295,30 +368,6 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           color: #ef4444;
         }
 
-        @media (max-width: 600px) {
-          .language-skills {
-            flex-direction: column;
-            gap: 10px;
-          }
-          
-          .skill-item {
-            flex-direction: row;
-            justify-content: space-between;
-            min-width: auto;
-            padding: 15px;
-          }
-          
-          .skill-icon {
-            margin-bottom: 0;
-            margin-right: 10px;
-          }
-          
-          .skill-label {
-            margin-bottom: 0;
-            flex-grow: 1;
-          }
-        }
-
         .footer {
           background: #f8fafc;
           padding: 20px 30px;
@@ -347,6 +396,10 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
           .skill-icon {
             margin-bottom: 0;
             margin-right: 10px;
+          }
+
+          .info-grid {
+            grid-template-columns: 1fr;
           }
         }
       </style>
@@ -444,7 +497,7 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
               </div>
               <div class="info-item">
                 <div class="info-label">Skills</div>
-                <div class="info-value">${candidate?.jobseeker_skills.jobseeker_skills || "N/A"}</div>
+                <div class="info-value">${candidate?.jobseeker_skills?.jobseeker_skills || "N/A"}</div>
               </div>
             </div>
           </div>
@@ -455,31 +508,7 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
               <span class="section-icon">📊</span>
               <h2>Experience Information</h2>
             </div>
-            <div class="experience-card">
-              <div class="experience-title">${candidate?.experience_Job_title || "Job Title"}</div>
-              <div class="info-grid">
-                <div class="info-item">
-                  <div class="info-label">Location</div>
-                  <div class="info-value">${candidate?.experience_Location || "N/A"}</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Salary</div>
-                  <div class="info-value">${candidate?.experience_Salary || "N/A"}</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Duration</div>
-                  <div class="info-value">${candidate?.experience_From_To || "N/A"}</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Nature of Work</div>
-                  <div class="info-value">${candidate?.experience_Nature_of_Work || "N/A"}</div>
-                </div>
-                <div class="info-item">
-                  <div class="info-label">Reason for Leaving</div>
-                  <div class="info-value">${candidate?.experience_Reason_for_leaving || "N/A"}</div>
-                </div>
-              </div>
-            </div>
+            ${formatExperienceDetails(candidate?.experience_details)}
           </div>
           
           <!-- Visa & Travel Information -->
@@ -610,6 +639,8 @@ const PDFGenerator = forwardRef<PDFGeneratorRef, PDFGeneratorProps>(({ candidate
 
   return null
 })
+
+PDFGenerator.displayName = "PDFGenerator"
 
 export default PDFGenerator
 export type { PDFGeneratorRef }

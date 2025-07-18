@@ -1,159 +1,138 @@
-import { StyleSheet, View, Text, Button, TouchableOpacity, useColorScheme } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { InputField } from './InputField'
-import BottomSheet from './PopupModal'
-import { useLoader } from '../services/LoaderContext'
-import { ApiService } from '../services/userServices'
-import { IFormData } from './Interfaces'
-import { checkbox, CheckboxList } from './CheckboxList'
 import { Ionicons } from '@expo/vector-icons'
+import React, { useEffect, useState } from 'react'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { InputField } from './InputField'
+import { IFormData } from './Interfaces'
 
+
+interface Reference {
+ title: string;       
+  location: string;     
+  salary: string; 
+  fromto: string;     
+  NOF: string;          
+  RFL: string; 
+}
 
 interface ExperienceProps {
   data: Partial<IFormData>;
   onTotalExpChange: (value: string) => void;
-  onAddExperience: (newExperience: Partial<IFormData>) => void;
-  // onDeleteExperience: (index: number) => void;
+  onChange: (field: string, value: any) => void;
 }
 
-const Experiences = ({ data, onTotalExpChange, onAddExperience }: ExperienceProps) => {
-  const parsedData = {
-    experience_From_To: data.experience_From_To?.split(',').map(s => s.trim()) || '',
-    experience_Job_title: data.experience_Job_title?.split(',').map(s => s.trim())|| '',
-    experience_Location: data.experience_Location?.split(',').map(s => s.trim())|| '',
-    experience_Nature_of_Work: data.experience_Nature_of_Work?.split(',').map(s => s.trim())|| '',
-    experience_Reason_for_leaving: data.experience_Reason_for_leaving?.split(',').map(s => s.trim())|| '',
-    experience_Salary: data.experience_Salary?.split(',').map(s => s.trim())|| '',
-  };
-  console.log(parsedData);
- 
-  const experienceCount = parsedData.experience_Job_title?.length || 0
-  const [modalVisible, setModalVisible] = useState(false);
-  const [totalExperainceList, SetTotalExperiacneList] =  useState<checkbox[]>([])
-  const [newExpData, setNewExpData] = useState<Partial<IFormData>>({
-    experience_Job_title: '',
-    experience_Location: '',
-    experience_Salary: '',
-    experience_From_To: '',
-    experience_Nature_of_Work: '',
-    experience_Reason_for_leaving: ''
-  });
+const Experiences = ({ data, onTotalExpChange, onChange }: ExperienceProps) => {
+ const [references, setReferences] = useState<Reference[]>([{
+        title: '',     
+        location: '',   
+        salary: '', 
+        fromto: '',   
+        NOF: '',        
+        RFL: '' 
+    }])
+  // Initialize references from existing data
+  useEffect(() => {
+    if (data.experience_Job_title || data.experience_Location || data.experience_Salary || data.experience_From_To || data.experience_Nature_of_Work || data.experience_Reason_for_leaving) {
+      const title = data.experience_Job_title?.split(",").filter((n) => n.trim()) || [""]
+      const location = data.experience_Location?.split(",").filter((m) => m.trim()) || [""]
+      const salary = data.experience_Salary?.split(",").filter((r) => r.trim()) || [""]
+      const fromto = data.experience_From_To?.split(",").filter((id) => id.trim()) || [""]
+      const NOF = data.experience_Nature_of_Work?.split(",").filter((id) => id.trim()) || [""]
+      const RFL = data.experience_Reason_for_leaving?.split(",").filter((id) => id.trim()) || [""]
 
-  const allFieldsFilled = () => {
-    return Object.values(newExpData).every(value => value.toString().trim() !== '');
-  }
+      const maxLength = Math.max(title.length, location.length, salary.length, fromto.length,NOF.length,RFL.length, 1)
 
-
-  const handleFieldChange = (field: keyof Partial<IFormData>, value: string) => {
-    setNewExpData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handleAddNewExperience = () => {
-    onAddExperience(newExpData);
-    setModalVisible(false);
-  };
-
-  const [modalContent, setModalContent] = useState<{
-    title: string;
-    content: React.ReactNode;
-  }>({ title: '', content: null });
-
-  const openModalAccordingly = (modalToOpen: string) =>{
-    switch (modalToOpen) {
-      case 'OepnExperianceList':
-        setModalContent({
-          title: 'Select your Experiance',
-          content: <CheckboxList data={totalExperainceList}
-              returnValue={(list)=>{handleSelectedValue(list, 'Eperiance')}}
-              ></CheckboxList>,
-          });
-        break;
-      case 'AddExp':
-        setModalContent({
-          title: `Add Experience No ${experienceCount+1}`,
-          content: <>
-          </>,
-          });
-        break;
-      default:
-        break;
-    }
-    setModalVisible(true);
-  }
-
-  const handleSelectedValue = (list : checkbox[], type: string)=>{
-      switch (type) {
-        case 'Eperiance':
-          let c =list.filter(item=>item.checked==true);
-          onTotalExpChange(c[0].name);
-          SetTotalExperiacneList(list)
-          setModalVisible(false)
-          break;
-          
-        default:
-          break;
+      const initialReferences: Reference[] = []
+      for (let i = 0; i < maxLength; i++) {
+        initialReferences.push({
+          title: title[i] || "",
+          location: location[i] || "",
+          salary: salary[i] || "",
+          fromto: fromto[i] || "",
+          NOF: NOF[i] || "",
+          RFL: RFL[i] || "",
+        })
       }
+
+      setReferences(initialReferences)
+    }
+  }, [])
+
+    const updateFormData = (refs: Reference[]) => {
+    const title = refs
+      .map((ref) => ref.title)
+      .filter((title) => title.trim() !== "")
+      .join(",")
+    const location = refs
+      .map((ref) => ref.location)
+      .filter((location) => location.trim() !== "")
+      .join(",")
+    const salary = refs
+      .map((ref) => ref.salary)
+      .filter((salary) => salary.trim() !== "")
+      .join(",")
+    const fromto = refs
+      .map((ref) => ref.fromto)
+      .filter((fromto) => fromto.trim() !== "")
+      .join(",")
+    const NOF = refs
+      .map((ref) => ref.NOF)
+      .filter((NOF) => NOF.trim() !== "")
+      .join(",")
+    const RFL = refs
+      .map((ref) => ref.RFL)
+      .filter((RFL) => RFL.trim() !== "")
+      .join(",")
+
+    // Update parent component with comma-separated values
+    onChange("experience_Job_title", title)
+    onChange("experience_Location", location)
+    onChange("experience_Salary", salary)
+    onChange("experience_From_To", fromto)
+    onChange("experience_Nature_of_Work", NOF)
+    onChange("experience_Reason_for_leaving", RFL)
+
   }
 
-
-  const hidePopup = () =>{
-      setModalVisible(false);
+  const updateReference = (index: number, field: keyof Reference, value: string) => {
+    const newReferences = [...references]
+    newReferences[index][field] = value
+    setReferences(newReferences)
+    updateFormData(newReferences)
   }
+
+  const removeReference = (index: number) => {
+    if (references.length > 1) {
+      Alert.alert("Remove Reference", "Are you sure you want to remove this reference?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            const newReferences = references.filter((_, i) => i !== index)
+            setReferences(newReferences)
+            updateFormData(newReferences)
+          },
+        },
+      ])
+    }
+  }
+
+  const addReference = () => {
+    const newReferences = [...references, { 
+      title: '',     
+        location: '',   
+        salary: '', 
+        fromto: '',   
+        NOF: '',        
+        RFL: '' 
+     }]
+    setReferences(newReferences)
+    updateFormData(newReferences)
+  }
+
 
   return (
     <View>
-
-      <BottomSheet 
-        visible={modalVisible} 
-        onClose={hidePopup}
-        title={`Add Experience No ${experienceCount+1}`}>{
-          <>
-           <View>
-            <InputField 
-              lable={"Job Title"} 
-              placeholder={"Enter Job Title"} 
-              onChangeValue={(value) => handleFieldChange('experience_Job_title', value)}
-              />    
-            <InputField 
-              lable={"Location"} 
-              placeholder={"Enter Location"} 
-              onChangeValue={(value) => handleFieldChange('experience_Location', value)}
-              />
-            <InputField 
-              lable={"Salary"} 
-              placeholder={"Enter Salary"} 
-              onChangeValue={(value) => handleFieldChange('experience_Salary', value)}
-              />
-            <InputField 
-              lable={"From - To"} 
-              placeholder={"Enter From - To"} 
-              onChangeValue={(value) => handleFieldChange('experience_From_To', value)}
-              />
-            <InputField 
-              lable={"Nature Of Work"} 
-              placeholder={"Enter Nature Of Work"} 
-              onChangeValue={(value) => handleFieldChange('experience_Nature_of_Work', value)}
-              />
-            <InputField 
-              lable={"Reason for Leaving"} 
-              placeholder={"Enter Reason for Leaving"} 
-              onChangeValue={(value) => handleFieldChange('experience_Reason_for_leaving', value)}
-              />
-            <View style={{marginTop: 20}}>
-              <Button 
-                title="Save Experience" 
-                onPress={handleAddNewExperience}
-                disabled={!allFieldsFilled()}
-                color={allFieldsFilled() ? '#4630EB' : '#CCCCCC'} 
-              />
-            </View>
-          </View>
-          </>
-        }</BottomSheet>
-
       <InputField 
         lable="Total Years of Experience" 
         placeholder="Select Total Years of Experience" 
@@ -163,49 +142,71 @@ const Experiences = ({ data, onTotalExpChange, onAddExperience }: ExperienceProp
         icon="timer-outline" 
       />
 
-      {Array.from({ length: experienceCount }).map((_, index) => (
-        <View style = {styles.group} key={index}>
-          <View>
-            <Text style= {styles.inputLabel}>Experiences {index+1}</Text>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Experience Information</Text>
+      </View>
+
+      {references.map((reference, index) => (
+        <View key={index} style={styles.referenceCard}>
+          <View style={styles.referenceHeader}>
+            <Text style={styles.referenceTitle}>Experience {index + 1}</Text>
+            {references.length > 1 && (
+              <TouchableOpacity style={styles.removeButton} onPress={() => removeReference(index)}>
+                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+              </TouchableOpacity>
+            )}
           </View>
-          <View style={{marginTop: 10}}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Job Title: </Text>
-              <Text style={styles.value}>{parsedData.experience_Job_title?.[index]}</Text>
-            </View>
 
-            <View style={styles.row}>
-              <Text style={styles.label}>Location: </Text>
-              <Text style={styles.value}>{parsedData.experience_Location?.[index]}</Text>
-            </View>
+          <InputField
+            lable={"Experience Job Title"}
+            placeholder={"Enter Job Title or Designation"}
+            onChangeValue={(value) => updateReference(index, "title", value)}
+            value={reference.title}
+          />
 
-            <View style={styles.row}>
-              <Text style={styles.label}>Salary: </Text>
-              <Text style={styles.value}>{parsedData.experience_Salary?.[index]}</Text>
-            </View>
+          <InputField
+            lable={"Experience Location"}
+            placeholder={"Enter work location"}
+            onChangeValue={(value) => updateReference(index, "location", value)}
+            value={reference.location}
+          />
 
-            <View style={styles.row}>
-              <Text style={styles.label}>From - To: </Text>
-              <Text style={styles.value}>{parsedData.experience_From_To?.[index]}</Text>
-            </View>
+          <InputField
+            lable={"Experience Salary"}
+            placeholder={"Enter previous Salary"}
+            onChangeValue={(value) => updateReference(index, "salary", value)}
+            value={reference.salary}
+          />
 
-            <View style={styles.row}>
-              <Text style={styles.label}>Nature of Work: </Text>
-              <Text style={styles.value}>{parsedData.experience_Nature_of_Work?.[index]}</Text>
-            </View>
+          <InputField
+            lable={"Experience From_To"}
+            placeholder={"Enter employment period"}
+            onChangeValue={(value) => updateReference(index, "fromto", value)}
+            value={reference.fromto}
+          />
 
-            <View style={styles.row}>
-              <Text style={styles.label}>Reason for Leaving: </Text>
-              <Text style={styles.value}>{parsedData.experience_Reason_for_leaving?.[index]}</Text>
-            </View>
-          </View>
+          <InputField
+            lable={"Experience Nature of Work"}
+            placeholder={"Describe your role"}
+            onChangeValue={(value) => updateReference(index, "NOF", value)}
+            value={reference.NOF}
+          />
+
+          <InputField
+            lable={"Experience Reason for Leaving"}
+            placeholder={"Describe Reason for leaving"}
+            onChangeValue={(value) => updateReference(index, "RFL", value)}
+            value={reference.RFL}
+          />
         </View>
       ))}
 
-      <TouchableOpacity style={styles.loginButton} onPress={()=>openModalAccordingly('AddExp')}>
-        <Ionicons name='add-outline' size={22} color={"#fff"}></Ionicons>
-        <Text style={styles.loginButtonText}> { experienceCount == 0 ? (<>Add Experience</>) : (<>Add More</>)}</Text>
+      {/* Add More Reference Button */}
+      <TouchableOpacity style={styles.addButton} onPress={addReference}>
+        <Ionicons name="add-circle-outline" size={24} color="#3B82F6" />
+        <Text style={styles.addButtonText}>Add More Reference</Text>
       </TouchableOpacity>
+
     </View>
   )
 }
@@ -213,44 +214,73 @@ const Experiences = ({ data, onTotalExpChange, onAddExperience }: ExperienceProp
 export default Experiences
 
 const styles = StyleSheet.create({
-  inputLabel: {
+  sectionHeader: {
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1F2937",
+    textAlign: "center",
+  },
+  referenceCard: {
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  referenceHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  referenceTitle: {
     fontSize: 16,
-    fontWeight : '500',
+    fontWeight: "600",
+    color: "#374151",
   },
-  group: {
-    marginTop: 15, 
-  },
-  loginButton: {
-    backgroundColor: '#5B94E2',
+  removeButton: {
     padding: 8,
     borderRadius: 8,
-    marginTop: 30,
-    marginBottom: 30,
-    flexDirection: 'row',
-    alignSelf: 'center'
+    backgroundColor: "#FEF2F2",
   },
-  loginButtonText: {
-    color: 'white',
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#3B82F6",
+    borderRadius: 12,
+    paddingVertical: 16,
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  addButtonText: {
     fontSize: 16,
-    marginRight: 5,
+    fontWeight: "500",
+    color: "#3B82F6",
+    marginLeft: 8,
   },
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: '#E1EDFC',
-    borderWidth: 2
+  debugSection: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 8,
   },
-  label: {
-    flex: 1,
-    padding: 12,
-    fontWeight: 'bold',
-    backgroundColor: '#E1EDFC',
-    borderRightWidth: 1,
-    borderColor: '#ccc',
+  debugTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#374151",
+    marginBottom: 8,
   },
-  value: {
-    flex: 2,
-    padding: 12,
-    color: '#333',
+  debugText: {
+    fontSize: 12,
+    color: "#6B7280",
+    marginBottom: 4,
   },
 })

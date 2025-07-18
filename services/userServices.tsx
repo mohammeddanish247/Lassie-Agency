@@ -455,28 +455,28 @@ const api = axios.create({
     addCandidate: async(data : Partial<IFormData>, id: string)=>{
       const formData = new FormData();
       formData.append('agency_id', id)
-      if (data.reference_name) {
-          data.reference_name.split(',').forEach(name => {
-            formData.append('reference_name[]', name);
-          });
-      } 
-      if (data.reference_mobile) {
-        data.reference_mobile.split(',').forEach(mobile => {
-          formData.append('reference_mobile[]', mobile);
-        });
-      }
+      // if (data.reference_name) {
+      //     data.reference_name.split(',').forEach(name => {
+      //       formData.append('reference_name[]', name);
+      //     });
+      // } 
+      // if (data.reference_mobile) {
+      //   data.reference_mobile.split(',').forEach(mobile => {
+      //     formData.append('reference_mobile[]', mobile);
+      //   });
+      // }
 
-      if (data.reference_relationship) {
-        data.reference_relationship.split(',').forEach(relationship => {
-          formData.append('reference_relationship[]', relationship);
-        });
-      }
+      // if (data.reference_relationship) {
+      //   data.reference_relationship.split(',').forEach(relationship => {
+      //     formData.append('reference_relationship[]', relationship);
+      //   });
+      // }
 
-      if (data.reference_any_id_number) {
-        data.reference_any_id_number.split(',').forEach(idNumber => {
-          formData.append('reference_any_id_number[]', idNumber);
-        });
-      }
+      // if (data.reference_any_id_number) {
+      //   data.reference_any_id_number.split(',').forEach(idNumber => {
+      //     formData.append('reference_any_id_number[]', idNumber);
+      //   });
+      // }
       if (data.skill && Array.isArray(data.skill)) {
           data.skill.forEach(skill => {
             formData.append('skill[]', skill);
@@ -518,7 +518,7 @@ const api = axios.create({
         });
       }
       Object.entries(data).forEach(([key, value]) => {
-        if (!['experience_Reason_for_leaving','experience_Nature_of_Work','experience_From_To','experience_Salary','experience_Location','experience_Job_title','languages', 'skill','reference_name','reference_mobile','reference_relationship','reference_any_id_number'].includes(key) && value !== undefined) {
+        if (!['languages', 'skill'].includes(key) && value !== undefined) {
           formData.append(key, value.toString());
         }
       });

@@ -298,33 +298,57 @@ export default function CandidateProfile() {
           <InfoRow icon="build-outline" label="Skills" value={candidate?.jobseeker_skills.jobseeker_skills} iconColor="#e67e22" />
 
           {/* Experience Info */}
-          <Text style={styles.cardTitle}>Experience</Text>
-           <InfoRow
-            icon="briefcase-outline"
-            label="Job Title"
-            value={`${candidate?.experience_Job_title}`}
-            iconColor="#3498db"
-          />
-          <InfoRow
-            icon="location-outline"
-            label="Location"
-            value={candidate?.experience_Location}
-            iconColor="#9b59b6"
-          />
-          <InfoRow icon="cash-outline" label="Salary" value={candidate?.experience_Salary} iconColor="#e74c3c" />
-          <InfoRow icon="calendar-outline" label="Duration" value={candidate?.experience_From_To} iconColor="#f39c12" />
-          <InfoRow
-            icon="document-text-outline"
-            label="Nature of Work"
-            value={candidate?.experience_Nature_of_Work}
-            iconColor="#2ecc71"
-          />
-          <InfoRow
-            icon="exit-outline"
-            label="Reason for Leaving"
-            value={candidate?.experience_Reason_for_leaving}
-            iconColor="#34495e"
-          />
+          {!candidate?.experience_details || candidate.experience_details.length === 0 ? (
+            <Text style={styles.noExperienceText}>No experience details available</Text>
+          ) : (
+              candidate?.experience_details?.map((experience : any, index :any) => (
+                 <View key={index} style={styles.experienceContainer}>
+                  <Text style={styles.cardTitle}>Experience {index+1}</Text>
+                  <InfoRow
+                    icon="briefcase-outline"
+                    label="Job Title"
+                    value={experience.experience_Job_title}
+                    iconColor="#3498db"
+                  />
+                  <InfoRow
+                    icon="location-outline"
+                    label="Location"
+                    value={experience.experience_Location}
+                    iconColor="#9b59b6"
+                  />
+                  <InfoRow 
+                    icon="cash-outline" 
+                    label="Salary" 
+                    value={experience.experience_Salary} 
+                    iconColor="#e74c3c" 
+                  />
+                  <InfoRow 
+                    icon="calendar-outline" 
+                    label="Duration" 
+                    value={experience.experience_From_To} 
+                    iconColor="#f39c12" 
+                  />
+                  <InfoRow
+                    icon="document-text-outline"
+                    label="Nature of Work"
+                    value={experience.experience_Nature_of_Work}
+                    iconColor="#2ecc71"
+                  />
+                  <InfoRow
+                    icon="exit-outline"
+                    label="Reason for Leaving"
+                    value={experience.experience_Reason_for_leaving}
+                    iconColor="#34495e"
+                  />
+                  
+                  {/* Add a separator between experiences except for the last one */}
+                  {index < candidate.experience_details.length - 1 && (
+                    <View style={styles.experienceSeparator} />
+                  )}
+                </View>
+              ))
+            )
+          }
 
         {/* Visa & Travel Information */}
            <Text style={styles.cardTitle}>Visa & Travel Information</Text>
@@ -577,4 +601,17 @@ const styles = StyleSheet.create({
     color: 'red',
     fontWeight: 'bold',
   },
+  experienceContainer: {
+    marginBottom: 16,
+  },
+  experienceSeparator: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginVertical: 12,
+  },
+  noExperienceText: {
+  color: '#666',
+  fontStyle: 'italic',
+  marginVertical: 8,
+}
 })

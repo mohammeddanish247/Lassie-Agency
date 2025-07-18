@@ -99,6 +99,13 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
     });
   }
 
+  const gotoCandidateListScreen = ()=>{
+    router.push({
+      pathname: '/(candidate)',
+      // params: { unParsedData: JSON.stringify(JobList) },
+    });
+  }
+
   const GotoViewDetails = useCallback((jobid: string) => {
     router.push({
       pathname: '/(jobs)/EmpDetails',
@@ -141,12 +148,15 @@ const ProfileItem: React.FC<{ profile: MaidProfiles }> = ({ profile }) => (
         
         {/* Maid Profiles Section */}
         {maidProfiles?.length > 0 ? (
-          <View style={globalStyles.sectionContainer}>
+         <View>
+           <View style={globalStyles.sectionContainer}>
             <Text style={styles.sectionTitle}>Maid Profiles</Text>
             <FlatList data={maidProfiles} scrollEnabled={false} renderItem={({item}) => (
               <ProfileItem profile={item}></ProfileItem>
             )}></FlatList>
           </View>
+          <View style={{alignItems: 'center'}}><Text style={{color: colors.primary}} onPress={gotoCandidateListScreen}>View All</Text></View>
+         </View>
         ) : null}
         
         {/* Add some bottom padding */}

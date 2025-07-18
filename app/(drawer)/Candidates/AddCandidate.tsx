@@ -422,7 +422,6 @@ export default function AddCandidate() {
     };
 
     const handlePersonalInfoChange = (field: string, value: string) => {
-        console.log(value);
         if (field == 'dob') {
             console.log(value);
             const parts = value.split('/');
@@ -448,34 +447,34 @@ export default function AddCandidate() {
             }));
     };
     
-    const handleAddExperience = (newExperience: Partial<IFormData>) => {
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            experience_Job_title: prevFormData.experience_Job_title
-                ? `${prevFormData.experience_Job_title}, ${newExperience.experience_Job_title}`
-                : newExperience.experience_Job_title,
+    // const handleAddExperience = (newExperience: Partial<IFormData>) => {
+    //     setFormData(prevFormData => ({
+    //         ...prevFormData,
+    //         experience_Job_title: prevFormData.experience_Job_title
+    //             ? `${prevFormData.experience_Job_title}, ${newExperience.experience_Job_title}`
+    //             : newExperience.experience_Job_title,
     
-            experience_Location: prevFormData.experience_Location
-                ? `${prevFormData.experience_Location}, ${newExperience.experience_Location}`
-                : newExperience.experience_Location,
+    //         experience_Location: prevFormData.experience_Location
+    //             ? `${prevFormData.experience_Location}, ${newExperience.experience_Location}`
+    //             : newExperience.experience_Location,
     
-            experience_Salary: prevFormData.experience_Salary
-                ? `${prevFormData.experience_Salary}, ${newExperience.experience_Salary}`
-                : newExperience.experience_Salary,
+    //         experience_Salary: prevFormData.experience_Salary
+    //             ? `${prevFormData.experience_Salary}, ${newExperience.experience_Salary}`
+    //             : newExperience.experience_Salary,
     
-            experience_From_To: prevFormData.experience_From_To
-                ? `${prevFormData.experience_From_To}, ${newExperience.experience_From_To}`
-                : newExperience.experience_From_To,
+    //         experience_From_To: prevFormData.experience_From_To
+    //             ? `${prevFormData.experience_From_To}, ${newExperience.experience_From_To}`
+    //             : newExperience.experience_From_To,
     
-            experience_Nature_of_Work: prevFormData.experience_Nature_of_Work
-                ? `${prevFormData.experience_Nature_of_Work}, ${newExperience.experience_Nature_of_Work}`
-                : newExperience.experience_Nature_of_Work,
+    //         experience_Nature_of_Work: prevFormData.experience_Nature_of_Work
+    //             ? `${prevFormData.experience_Nature_of_Work}, ${newExperience.experience_Nature_of_Work}`
+    //             : newExperience.experience_Nature_of_Work,
     
-            experience_Reason_for_leaving: prevFormData.experience_Reason_for_leaving
-                ? `${prevFormData.experience_Reason_for_leaving}, ${newExperience.experience_Reason_for_leaving}`
-                : newExperience.experience_Reason_for_leaving,
-        }));
-    };
+    //         experience_Reason_for_leaving: prevFormData.experience_Reason_for_leaving
+    //             ? `${prevFormData.experience_Reason_for_leaving}, ${newExperience.experience_Reason_for_leaving}`
+    //             : newExperience.experience_Reason_for_leaving,
+    //     }));
+    // };
     
 
     const handleImageChange = (field: string, value: string) => {
@@ -775,12 +774,12 @@ export default function AddCandidate() {
             ApiService.addCandidate(formData, userData.user_id).then(res=>{
                 if (res.error == false) {
                     console.log('add candidate', res);
-                    ApiService.uploadCandidateDocPics(userData.user_id, res.canditate_id, candidateDocs)
-                    .then(res=>{
-                        if (res.error == false) {
                         showLoading(false);
                         showSuccess(res.message)
                         router.dismissAll();
+                    ApiService.uploadCandidateDocPics(userData.user_id, res.canditate_id, candidateDocs)
+                    .then(res=>{
+                        if (res.error == false) {
                         }else {
                         Alert.alert('Error',res.message)
                         }
@@ -909,8 +908,10 @@ export default function AddCandidate() {
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <Experiences  data={formData}
+                        onChange={(field, value)=> handlePersonalInfoChange(field, value)}
                         onTotalExpChange={handleTotalExperienceChange}
-                        onAddExperience={handleAddExperience}></Experiences>
+                        // onAddExperience={handleAddExperience}
+                        ></Experiences>
                 </ScrollView>
         </KeyboardAvoidingView> 
         }
