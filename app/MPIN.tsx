@@ -89,7 +89,6 @@ const MPIN = () => {
   
   // Handle submit
   const handleSubmit = () => {
-    router.replace('/(drawer)/(tabs)/Home')
     // Validate inputs
     if (mpin.length !== 4) {
       Alert.alert('Please enter a 4-digit MPIN');
@@ -151,6 +150,7 @@ const MPIN = () => {
       } else {
         Alert.alert('Login Failed', userData.message);
         showLoading(false)
+        setMpin('')
       }
     }).catch(err=>{
        Alert.alert('Login Failed', err.message);
